@@ -1,26 +1,25 @@
-console.log("meta above", process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD);
-console.log(
-  "AWS_LAMBDA_FUNCTION_VERSION",
-  process.env.AWS_LAMBDA_FUNCTION_VERSION
-);
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
+  let browser = null;
   try {
-    console.log("meta", process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD);
-    console.log(
-      "AWS_LAMBDA_FUNCTION_VERSION",
-      process.env.AWS_LAMBDA_FUNCTION_VERSION
-    );
-
-    res.statusCode = 200;
-    res.setHeader("Content-Type", `application/json`);
-    res.end(JSON.stringify({ hello: true }));
-  } catch (err) {
-    console.log(err);
-    res.statusCode = 500;
-    res.json({
-      error: err.toString(),
+    console.log('Launching browser...');
+    browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
     });
-    res.end();
+    console.log('Browser launched successfully');
+    // Rest of your code...
+  } catch (error) {
+    console.error('Error launching browser:', error);
+    res.status(500).json({ error: 'Failed to launch browser' });
+  } finally {
+    if (browser !== null) {
+      await browser.close();
+    }
   }
-};
+}
