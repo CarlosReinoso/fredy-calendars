@@ -4,6 +4,5 @@
       "memory": 1024,
       "maxDuration": 60
     }
-  },
-  "installCommand": "echo "Running custom install command..." && apt-get update && apt-get install -y libnss3 && pnpm install"
+  }
 }
