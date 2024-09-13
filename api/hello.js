@@ -41,7 +41,9 @@ module.exports = async function (req, res) {
 
     // // Replace with your Airbnb credentials
     const email = process.env.AIRBNB_LOGIN;
+    console.log("🚀 ~ email:", email)
     const password = process.env.AIRBNB_PASSWORD;
+    console.log("🚀 ~ password:", password)
 
     // Log in to Airbnb with email
     try {
