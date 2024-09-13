@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "api/*.js": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
+  "installCommand": "apt-get update && apt-get install -y libnss3 && pnpm install"
+}
