@@ -13,7 +13,8 @@ module.exports = async function (req, res) {
       ignoreHTTPSErrors: true,
     });
     console.log("Browser launched successfully");
-    // Rest of your code..
+
+    const page = await browser.newPage();
 
     // Go to the Airbnb login page
     await page.goto("https://www.airbnb.com/login", {
