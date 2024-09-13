@@ -16,33 +16,7 @@ module.exports = async (req, res) => {
 
     const page = await browser.newPage();
 
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    );
-
-    // Additional stealthy configurations to evade detection
-    await page.evaluateOnNewDocument(() => {
-      // Pass the Webdriver test
-      Object.defineProperty(navigator, "webdriver", { get: () => false });
-
-      // Pass plugins length check
-      Object.defineProperty(navigator, "plugins", { get: () => [1, 2, 3] });
-
-      // Pass languages test
-      Object.defineProperty(navigator, "languages", {
-        get: () => ["en-US", "en"],
-      });
-
-      // Pass additional common detection checks
-      window.chrome = { runtime: {} };
-      Object.defineProperty(navigator, "connection", {
-        get: () => ({
-          downlink: 10,
-          effectiveType: "4g",
-          rtt: 50,
-        }),
-      });
-    });
+   
 
     // Go to the Airbnb login page
     await page.goto("https://www.airbnb.com/login", {
