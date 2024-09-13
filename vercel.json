@@ -1,7 +1,9 @@
 {
-  "build": {
-    "env": {
-      "VERCEL_DEBUG_BUILD": "true"
+  "functions": {
+    "api/meta.js": {
+      "memory": 3008,
+      "maxDuration": 60,
+      "includeFiles": "node_modules/**"
     }
   }
 }
