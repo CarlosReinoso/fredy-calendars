@@ -1,8 +1,6 @@
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
 
-puppeteer.use(StealthPlugin());
 
 module.exports = async (req, res) => {
   let browser = null;
