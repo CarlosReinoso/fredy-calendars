@@ -1,4 +1,3 @@
-const { NextResponse } = require("next/server");
 const chromium = require("@sparticuz/chromium");
 const puppeteer = require("puppeteer-core");
 
