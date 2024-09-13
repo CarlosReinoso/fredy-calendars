@@ -16,8 +16,6 @@ module.exports = async (req, res) => {
 
     const page = await browser.newPage();
 
-   
-
     // Go to the Airbnb login page
     await page.goto("https://www.airbnb.com/login", {
       waitUntil: "networkidle2",
@@ -35,18 +33,14 @@ module.exports = async (req, res) => {
     } catch (clickError) {
       console.error("Error clicking 'Continue with email' button:", clickError);
       await browser.close();
-      res.statusCode = 500;
-      return res.json({
-        message: "Failed to click 'Continue with email' button.",
-      });
+      return NextResponse.json(
+        { message: "Failed to click 'Continue with email' button." },
+        { status: 500 }
+      );
     }
-
-    // // Replace with your Airbnb credentials
+    // Replace with your Airbnb credentials
     const email = process.env.AIRBNB_LOGIN;
-    console.log("🚀 ~ email:", email);
     const password = process.env.AIRBNB_PASSWORD;
-    console.log("🚀 ~ password:", password);
-
     // Log in to Airbnb with email
     try {
       await page.waitForSelector('input[type="email"]', {
@@ -84,18 +78,18 @@ module.exports = async (req, res) => {
     } catch (loginError) {
       console.error("Error during login:", loginError);
       await browser.close();
-      res.statusCode = 500;
-      return res.json({
-        message: "Login failed, please check your credentials and selectors.",
-      });
+      return NextResponse.json(
+        {
+          message: "Login failed, please check your credentials and selectors.",
+        },
+        { status: 500 }
+      );
     }
-
     // Navigate to the calendar page after successful login
     await page.goto(
       "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/",
       { waitUntil: "networkidle2" }
     );
-
     // Scroll down to ensure all content is loaded
     await page.evaluate(async () => {
       await new Promise((resolve) => {
@@ -111,10 +105,8 @@ module.exports = async (req, res) => {
         }, 200); // Adjust this interval to control the scroll speed
       });
     });
-
     // Wait a moment after scrolling to ensure elements have settled
     await new Promise((resolve) => setTimeout(resolve, 2000)); // Use a native delay
-
     try {
       console.log("🚀 Attempting to click the Refresh button...");
       // Use page.evaluate to find the button and simulate a more realistic click
@@ -150,7 +142,6 @@ module.exports = async (req, res) => {
         });
         return clicked;
       });
-
       if (refreshClicked) {
         console.log(
           "Refresh button clicked successfully using enhanced simulation."
@@ -159,17 +150,15 @@ module.exports = async (req, res) => {
         console.log("Failed to click the Refresh button, no action taken.");
         throw new Error("Refresh button not found or could not be clicked.");
       }
-
       // Wait for the page to update or any indication of completion
       await new Promise((resolve) => setTimeout(resolve, 3000)); // Adjust this timeout based on expected action delay
     } catch (refreshError) {
       console.error("Error clicking the Refresh button:", refreshError);
-      res.statusCode = 500;
-      return res.json({
-        message: "Error clicking the Refresh button.",
-      });
+      return NextResponse.json(
+        { message: "Error clicking the Refresh button." },
+        { status: 500 }
+      );
     }
-
     // Close the browser
     await browser.close();
 
