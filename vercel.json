@@ -1,0 +1,41 @@
+{
+    "functions": {
+      "api/duckduckgo_profiles.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      },
+      "api/index.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      },
+      "api/meta.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      },
+      "api/metrics.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      },
+      "api/pdf.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      },
+      "api/screenshot.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      },
+      "api/testy.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      },
+      "api/trace.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      },
+      "api/version.js": {
+        "memory": 1024,
+        "maxDuration": 60
+      }
+    }
+  }
+  
