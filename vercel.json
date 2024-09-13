@@ -5,5 +5,5 @@
       "maxDuration": 60
     }
   },
-  "installCommand": "apt-get update && apt-get install -y libnss3 && pnpm install"
+  "installCommand": "apt-get update && apt-get install -y libnss3 && pnpm install && ls -alh /tmp && ls -alh /var/task"
 }
