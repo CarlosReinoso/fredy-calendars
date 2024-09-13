@@ -1,7 +1,10 @@
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const chromium = require("@sparticuz/chromium");
-const puppeteer = require("puppeteer-core");
 
-module.exports = async function (req, res) {
+puppeteer.use(StealthPlugin());
+
+module.exports = async (req, res) => {
   let browser = null;
   try {
     console.log("Launching browser...");
@@ -15,6 +18,18 @@ module.exports = async function (req, res) {
     console.log("Browser launched successfully");
 
     const page = await browser.newPage();
+
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    );
+
+    // Additional options to appear more like a real browser
+    await page.evaluateOnNewDocument(() => {
+      // Pass the Webdriver test
+      Object.defineProperty(navigator, "webdriver", {
+        get: () => false,
+      });
+    });
 
     // Go to the Airbnb login page
     await page.goto("https://www.airbnb.com/login", {
@@ -41,9 +56,9 @@ module.exports = async function (req, res) {
 
     // // Replace with your Airbnb credentials
     const email = process.env.AIRBNB_LOGIN;
-    console.log("🚀 ~ email:", email)
+    console.log("🚀 ~ email:", email);
     const password = process.env.AIRBNB_PASSWORD;
-    console.log("🚀 ~ password:", password)
+    console.log("🚀 ~ password:", password);
 
     // Log in to Airbnb with email
     try {
