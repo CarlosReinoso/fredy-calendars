@@ -1,7 +1,7 @@
 const chromium = require("@sparticuz/chromium");
 const puppeteer = require("puppeteer-core");
 
-module.exports.GET = async function (req, res) {
+module.exports = async function (req, res) {
   try {
     // Configure Puppeteer options with the Sparticuz Chromium path
     const options = {
