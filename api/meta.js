@@ -1,8 +1,6 @@
 const puppeteer = require("puppeteer-core");
 const chrome = require("chrome-aws-lambda");
 
-console.log("meta", process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD)
-console.log("AWS_LAMBDA_FUNCTION_VERSION", process.env.AWS_LAMBDA_FUNCTION_VERSION)
 
 module.exports = async (req, res) => {
   try {
