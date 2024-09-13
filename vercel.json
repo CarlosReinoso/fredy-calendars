@@ -1,41 +1,16 @@
 {
+    "builds": [
+      {
+        "src": "api/*.js",
+        "use": "@vercel/node"
+      }
+    ],
     "functions": {
-      "api/duckduckgo_profiles.js": {
-        "memory": 1024,
-        "maxDuration": 60
-      },
-      "api/index.js": {
-        "memory": 1024,
-        "maxDuration": 60
-      },
-      "api/meta.js": {
-        "memory": 1024,
-        "maxDuration": 60
-      },
-      "api/metrics.js": {
-        "memory": 1024,
-        "maxDuration": 60
-      },
-      "api/pdf.js": {
-        "memory": 1024,
-        "maxDuration": 60
-      },
-      "api/screenshot.js": {
-        "memory": 1024,
-        "maxDuration": 60
-      },
-      "api/testy.js": {
-        "memory": 1024,
-        "maxDuration": 60
-      },
-      "api/trace.js": {
-        "memory": 1024,
-        "maxDuration": 60
-      },
-      "api/version.js": {
+      "api/*.js": {
         "memory": 1024,
         "maxDuration": 60
       }
-    }
+    },
+    "installCommand": "apt-get update && apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxcomposite1 libxrandr2 libxdamage1 libxkbcommon0 libgbm1 && pnpm install"
   }
   
