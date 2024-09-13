@@ -20,23 +20,24 @@ module.exports = async function (req, res) {
     await page.goto("https://www.airbnb.com/login", {
       waitUntil: "networkidle2",
     });
+    console.log("🚀 ~ page:");
 
     // Click the "Continue with email" button
-    // try {
-    //   await page.waitForSelector('button[aria-label="Continue with email"]', {
-    //     visible: true,
-    //     timeout: 10000,
-    //   });
-    //   await page.click('button[aria-label="Continue with email"]');
-    //   console.log("Clicked 'Continue with email' button.");
-    // } catch (clickError) {
-    //   console.error("Error clicking 'Continue with email' button:", clickError);
-    //   await browser.close();
-    //   res.statusCode = 500;
-    //   return res.json({
-    //     message: "Failed to click 'Continue with email' button.",
-    //   });
-    // }
+    try {
+      await page.waitForSelector('button[aria-label="Continue with email"]', {
+        visible: true,
+        timeout: 10000,
+      });
+      await page.click('button[aria-label="Continue with email"]');
+      console.log("Clicked 'Continue with email' button.");
+    } catch (clickError) {
+      console.error("Error clicking 'Continue with email' button:", clickError);
+      await browser.close();
+      res.statusCode = 500;
+      return res.json({
+        message: "Failed to click 'Continue with email' button.",
+      });
+    }
 
     // // Replace with your Airbnb credentials
     // const email = process.env.AIRBNB_LOGIN;
