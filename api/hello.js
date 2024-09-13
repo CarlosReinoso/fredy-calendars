@@ -2,18 +2,18 @@ const chromium = require("@sparticuz/chromium");
 const puppeteer = require("puppeteer-core");
 
 module.exports = async function (req, res) {
+  let browser = null;
   try {
-    // Configure Puppeteer options with the Sparticuz Chromium path
-    const options = {
+    console.log("Launching browser...");
+    browser = await puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
-    };
-
-    // Launch Puppeteer with the provided options
-    const browser = await puppeteer.launch(options);
-    const page = await browser.newPage();
+    });
+    console.log("Browser launched successfully");
+    // Rest of your code..
 
     // Go to the Airbnb login page
     await page.goto("https://www.airbnb.com/login", {
