@@ -1,8 +1,8 @@
 {
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node@12.22.12"
+  "functions": {
+    "api/*.js": {
+      "memory": 1024,
+      "maxDuration": 60
     }
-  ]
+  }
 }
