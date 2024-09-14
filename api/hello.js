@@ -76,27 +76,47 @@ module.exports = async (req, res) => {
         timeout: 30000,
       });
       await page.evaluate(() => {
-        const button = document.querySelector('button[data-veloute="submit-btn-cypress"]');
-        console.log("🚀 ~ awaitpage.evaluate ~ button:", button)
+        const button = document.querySelector(
+          'button[data-veloute="submit-btn-cypress"]'
+        );
+        console.log("🚀 ~ awaitpage.evaluate ~ button:", button);
         if (button) {
           const rect = button.getBoundingClientRect();
           button.scrollIntoView({ behavior: "smooth", block: "center" });
-      
+
           // Dispatching mouse events to simulate a real click
-          button.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
-          button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
-          button.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+          button.dispatchEvent(
+            new MouseEvent("mousedown", {
+              bubbles: true,
+              cancelable: true,
+              view: window,
+            })
+          );
+          button.dispatchEvent(
+            new MouseEvent("mouseup", {
+              bubbles: true,
+              cancelable: true,
+              view: window,
+            })
+          );
+          button.dispatchEvent(
+            new MouseEvent("click", {
+              bubbles: true,
+              cancelable: true,
+              view: window,
+            })
+          );
         }
       });
       console.log("Clicked 'Continue' button using JavaScript evaluate.");
       // Check if the password input is available and interact with it inside the page context
 
-    //   const form = await page.evaluate(() => {
-    //     const formEL = document.querySelector("form");
-    //     return formEL ? formEL.outerHTML : "Main content not found";
-    //   });
-    //   console.log("🚀 ~ form ~ form:", form);
-
+      //   const form = await page.evaluate(() => {
+      //     const formEL = document.querySelector("form");
+      //     return formEL ? formEL.outerHTML : "Main content not found";
+      //   });
+      //   console.log("🚀 ~ form ~ form:", form);
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       const inputEl = await page.evaluate(() => {
         const inputPass = document.querySelector('input[type="password"]');
         return inputPass ? inputPass.outerHTML : "Main content not found";
