@@ -75,6 +75,14 @@ module.exports = async (req, res) => {
         visible: true,
         timeout: 30000,
       });
+
+      const emailBtn = await page.evaluate(() => {
+        const inputPass = document.querySelector('button[data-veloute="submit-btn-cypress"]');
+        return inputPass ? inputPass.outerHTML : "Main content not found";
+      });
+      console.log("🚀 ~ button[data-veloute=submit-btn-cypress]", emailBtn);
+
+
       await page.evaluate(() => {
         const button = document.querySelector(
           'button[data-veloute="submit-btn-cypress"]'
