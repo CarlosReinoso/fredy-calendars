@@ -89,10 +89,16 @@ module.exports = async (req, res) => {
       // Check if the password input is available and interact with it inside the page context
 
       const form = await page.evaluate(() => {
-        const formEL = document.querySelector('form');
-        return formEL ? formEL.outerHTML : 'Main content not found';
+        const formEL = document.querySelector("form");
+        return formEL ? formEL.outerHTML : "Main content not found";
       });
-      console.log("🚀 ~ form ~ form:", form)
+      console.log("🚀 ~ form ~ form:", form);
+
+      const inputEl = await page.evaluate(() => {
+        const inputPass = document.querySelector('input[type="password"]');
+        return inputPass ? inputPass.outerHTML : "Main content not found";
+      });
+      console.log("🚀 ~ inputEl ~ inputEl:", inputEl);
 
       try {
         await page.evaluate(() => {
