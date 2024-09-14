@@ -88,19 +88,11 @@ module.exports = async (req, res) => {
       console.log("Clicked 'Continue' button using JavaScript evaluate.");
       // Check if the password input is available and interact with it inside the page context
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      const bodyContent = await page.evaluate(() => {
-        const body = document.querySelector('body');
-        return body ? body.outerHTML : 'Body content not found';
+      const form = await page.evaluate(() => {
+        const formEL = document.querySelector('form');
+        return formEL ? formEL.outerHTML : 'Main content not found';
       });
-      console.log("🚀 ~ bodyContent ~ bodyContent:", bodyContent)
-    
-
-      const mainContent = await page.evaluate(() => {
-        const mainElement = document.querySelector('main#site-content');
-        return mainElement ? mainElement.outerHTML : 'Main content not found';
-      });
-      console.log("🚀 ~ mainContent ~ mainContent:", mainContent)
+      console.log("🚀 ~ form ~ form:", form)
 
       try {
         await page.evaluate(() => {
