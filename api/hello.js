@@ -65,10 +65,20 @@ module.exports = async (req, res) => {
       });
       console.log("Clicked 'Continue' button using JavaScript evaluate.");
       // Check if the password input is available and interact with it inside the page context
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      
       try {
         await page.evaluate(() => {
           const passwordInput = document.querySelector(
-            'input[name="user[password]"]'
+            'input[data-testid="email-signup-password"]'
+          );
+          const passwordInputTwo = document.querySelector(
+            'input[type="password"]'
+          );
+          console.log(
+            "🚀 ~ awaitpage.evaluate ~ passwordInputTwo:",
+            passwordInputTwo
           );
           if (passwordInput) {
             passwordInput.scrollIntoView();
