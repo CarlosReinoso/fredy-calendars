@@ -68,6 +68,9 @@ module.exports = async (req, res) => {
         visible: true,
         timeout: 30000,
       });
+
+      console.log("password input field appeared");
+
       await page.type('input[type="password"]', password);
       
       
