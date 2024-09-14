@@ -76,47 +76,65 @@ module.exports = async (req, res) => {
         timeout: 30000,
       });
 
-      const emailBtn = await page.evaluate(() => {
-        const inputPass = document.querySelector('button[data-veloute="submit-btn-cypress"]');
-        return inputPass ? inputPass.outerHTML : "Main content not found";
-      });
-      console.log("🚀 ~ button[data-veloute=submit-btn-cypress]", emailBtn);
+      console.log(
+        "🚀 ~ button[data-veloute=submit-btn-cypress]",
+        await page.evaluate(() =>
+          document.querySelector('button[data-veloute="submit-btn-cypress"]')
+        )
+      );
 
+      try {
+        await page.evaluate(() => {
+          const button = document.querySelector(
+            'button[data-veloute="submit-btn-cypress"]'
+          );
 
-      await page.evaluate(() => {
-        const button = document.querySelector(
-          'button[data-veloute="submit-btn-cypress"]'
+          if (button && !button.disabled) {
+            button.scrollIntoView({ behavior: "smooth", block: "center" });
+
+            const rect = button.getBoundingClientRect();
+
+            // Simulate mousedown, mouseup, and click events with calculated positions
+            button.dispatchEvent(
+              new MouseEvent("mousedown", {
+                bubbles: true,
+                cancelable: true,
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+                view: window,
+              })
+            );
+
+            button.dispatchEvent(
+              new MouseEvent("mouseup", {
+                bubbles: true,
+                cancelable: true,
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+                view: window,
+              })
+            );
+
+            button.dispatchEvent(
+              new MouseEvent("click", {
+                bubbles: true,
+                cancelable: true,
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+                view: window,
+              })
+            );
+          } else {
+            console.error("Button not clickable or disabled.");
+          }
+        });
+        console.log(
+          "Attempted to click 'Continue' button using more realistic events."
         );
-        console.log("🚀 ~ awaitpage.evaluate ~ button:", button);
-        if (button) {
-          const rect = button.getBoundingClientRect();
-          button.scrollIntoView({ behavior: "smooth", block: "center" });
+      } catch (error) {
+        console.error("Error clicking 'Continue' button:", error);
+      }
 
-          // Dispatching mouse events to simulate a real click
-          button.dispatchEvent(
-            new MouseEvent("mousedown", {
-              bubbles: true,
-              cancelable: true,
-              view: window,
-            })
-          );
-          button.dispatchEvent(
-            new MouseEvent("mouseup", {
-              bubbles: true,
-              cancelable: true,
-              view: window,
-            })
-          );
-          button.dispatchEvent(
-            new MouseEvent("click", {
-              bubbles: true,
-              cancelable: true,
-              view: window,
-            })
-          );
-        }
-      });
-      console.log("Clicked 'Continue' button using JavaScript evaluate.");
       // Check if the password input is available and interact with it inside the page context
 
       //   const form = await page.evaluate(() => {
