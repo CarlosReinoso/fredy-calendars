@@ -5,10 +5,16 @@ module.exports = async (req, res) => {
   let browser = null;
   try {
     console.log("Launching browser...");
+    const executablePath =
+      process.env.NODE_ENV === "production"
+        ? await chromium.executablePath()
+        : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"; // Path to your local Chrome/Chromium executable
+
+
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath: executablePath,
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
@@ -26,14 +32,14 @@ module.exports = async (req, res) => {
     try {
       await page.waitForSelector('button[aria-label="Continue with email"]', {
         visible: true,
-        timeout: 10000,
+        timeout: 30000,
       });
       await page.click('button[aria-label="Continue with email"]');
       console.log("Clicked 'Continue with email' button.");
     } catch (clickError) {
       console.error("Error clicking 'Continue with email' button:", clickError);
       await browser.close();
-      return NextResponse.json(
+      return res.json(
         { message: "Failed to click 'Continue with email' button." },
         { status: 500 }
       );
@@ -45,12 +51,12 @@ module.exports = async (req, res) => {
     try {
       await page.waitForSelector('input[type="email"]', {
         visible: true,
-        timeout: 10000,
+        timeout: 30000,
       });
       await page.type('input[type="email"]', email);
       await page.waitForSelector('button[data-veloute="submit-btn-cypress"]', {
         visible: true,
-        timeout: 10000,
+        timeout: 30000,
       });
       await page.evaluate(() => {
         const button = document.querySelector(
@@ -65,12 +71,14 @@ module.exports = async (req, res) => {
       console.log("Clicked 'Continue' button using JavaScript evaluate.");
       await page.waitForSelector('input[type="password"]', {
         visible: true,
-        timeout: 10000,
+        timeout: 30000,
       });
       await page.type('input[type="password"]', password);
+      console.log("Input password typed");
+
       await page.waitForSelector('button[type="submit"]', {
         visible: true,
-        timeout: 10000,
+        timeout: 30000,
       });
       await page.click('button[type="submit"]');
       console.log("Clicked login button.");
@@ -78,7 +86,7 @@ module.exports = async (req, res) => {
     } catch (loginError) {
       console.error("Error during login:", loginError);
       await browser.close();
-      return NextResponse.json(
+      return res.json(
         {
           message: "Login failed, please check your credentials and selectors.",
         },
@@ -154,7 +162,7 @@ module.exports = async (req, res) => {
       await new Promise((resolve) => setTimeout(resolve, 3000)); // Adjust this timeout based on expected action delay
     } catch (refreshError) {
       console.error("Error clicking the Refresh button:", refreshError);
-      return NextResponse.json(
+      return res.json(
         { message: "Error clicking the Refresh button." },
         { status: 500 }
       );
