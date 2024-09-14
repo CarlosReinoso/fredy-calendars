@@ -64,16 +64,15 @@ module.exports = async (req, res) => {
         }
       });
       console.log("Clicked 'Continue' button using JavaScript evaluate.");
-      await page.waitForSelector('input[type="password"]', {
+      await page.waitForSelector('input[name="user[password]"]', {
         visible: true,
         timeout: 30000,
       });
 
       console.log("password input field appeared");
 
-      await page.type('input[type="password"]', password);
-      
-      
+      await page.type('input[name="user[password]"]', password);
+
       console.log("Input password typed");
 
       await page.waitForSelector('button[type="submit"]', {
