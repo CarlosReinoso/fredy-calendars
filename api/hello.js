@@ -7,7 +7,16 @@ module.exports = async (req, res) => {
     console.log("Launching browser...");
 
     browser = await puppeteer.launch({
-      args: chromium.args,
+      args: [
+        ...chromium.args,
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-blink-features=AutomationControlled",
+        "--disable-web-security",
+        "--disable-features=IsolateOrigins,site-per-process",
+        "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
+      ],
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
       headless: chromium.headless,
@@ -16,6 +25,19 @@ module.exports = async (req, res) => {
     console.log("Browser launched successfully");
 
     const page = await browser.newPage();
+
+    // Add additional stealth configurations
+    await page.evaluateOnNewDocument(() => {
+      // Avoid detection by overriding navigator properties
+      Object.defineProperty(navigator, "webdriver", { get: () => false });
+      Object.defineProperty(navigator, "plugins", {
+        get: () => [1, 2, 3, 4, 5],
+      });
+      Object.defineProperty(navigator, "languages", {
+        get: () => ["en-US", "en"],
+      });
+      window.chrome = { runtime: {} };
+    });
 
     // Go to the Airbnb login page
     await page.goto("https://www.airbnb.com/login", {
@@ -66,8 +88,15 @@ module.exports = async (req, res) => {
       console.log("Clicked 'Continue' button using JavaScript evaluate.");
       // Check if the password input is available and interact with it inside the page context
 
+      // Debugging: Log the document state before interacting with the password field
+      const documentHTML = await page.content();
+      console.log("Current Document HTML:", documentHTML);
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      
+
+      // Debugging: Log the document state before interacting with the password field
+      const documentHTMLAfterDelay = await page.content();
+      console.log("Current documentHTMLAfterDelay", documentHTMLAfterDelay);
+
       try {
         await page.evaluate(() => {
           const passwordInput = document.querySelector(
