@@ -64,16 +64,30 @@ module.exports = async (req, res) => {
         }
       });
       console.log("Clicked 'Continue' button using JavaScript evaluate.");
-      await page.waitForSelector('input[name="user[password]"]', {
-        visible: true,
-        timeout: 30000,
-      });
-
-      console.log("password input field appeared");
-
-      await page.type('input[name="user[password]"]', password);
-
-      console.log("Input password typed");
+      // Check if the password input is available and interact with it inside the page context
+      try {
+        await page.evaluate(() => {
+          const passwordInput = document.querySelector(
+            'input[name="user[password]"]'
+          );
+          if (passwordInput) {
+            passwordInput.scrollIntoView();
+            passwordInput.focus();
+            passwordInput.value = ""; // Clear any pre-filled values just in case
+            passwordInput.setAttribute("value", password); // Replace with your password
+          } else {
+            throw new Error("Password input field not found");
+          }
+        });
+        console.log("Password field found and filled.");
+      } catch (error) {
+        console.error("Error interacting with the password field:", error);
+        await browser.close();
+        res.statusCode = 500;
+        return res.json({
+          message: "Failed to interact with the password field.",
+        });
+      }
 
       await page.waitForSelector('button[type="submit"]', {
         visible: true,
