@@ -5,16 +5,11 @@ module.exports = async (req, res) => {
   let browser = null;
   try {
     console.log("Launching browser...");
-    const executablePath =
-      process.env.NODE_ENV === "production"
-        ? await chromium.executablePath()
-        : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"; // Path to your local Chrome/Chromium executable
-
 
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: executablePath,
+      executablePath: await chromium.executablePath(),
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
@@ -74,6 +69,8 @@ module.exports = async (req, res) => {
         timeout: 30000,
       });
       await page.type('input[type="password"]', password);
+      
+      
       console.log("Input password typed");
 
       await page.waitForSelector('button[type="submit"]', {
