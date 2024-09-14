@@ -96,6 +96,12 @@ module.exports = async (req, res) => {
       console.log("🚀 ~ bodyContent ~ bodyContent:", bodyContent)
     
 
+      const mainContent = await page.evaluate(() => {
+        const mainElement = document.querySelector('main#site-content');
+        return mainElement ? mainElement.outerHTML : 'Main content not found';
+      });
+      console.log("🚀 ~ mainContent ~ mainContent:", mainContent)
+
       try {
         await page.evaluate(() => {
           const passwordInput = document.querySelector(
