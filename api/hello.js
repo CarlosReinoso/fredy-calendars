@@ -88,14 +88,13 @@ module.exports = async (req, res) => {
       console.log("Clicked 'Continue' button using JavaScript evaluate.");
       // Check if the password input is available and interact with it inside the page context
 
-      // Debugging: Log the document state before interacting with the password field
-      const documentHTML = await page.content();
-      console.log("Current Document HTML:", documentHTML);
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Debugging: Log the document state before interacting with the password field
-      const documentHTMLAfterDelay = await page.content();
-      console.log("Current documentHTMLAfterDelay", documentHTMLAfterDelay);
+      const bodyContent = await page.evaluate(() => {
+        const body = document.querySelector('body');
+        return body ? body.outerHTML : 'Body content not found';
+      });
+      console.log("🚀 ~ bodyContent ~ bodyContent:", bodyContent)
+    
 
       try {
         await page.evaluate(() => {
