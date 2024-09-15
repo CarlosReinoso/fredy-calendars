@@ -1,5 +1,8 @@
 const fs = require("fs");
-const puppeteer = require("puppeteer-core");
+// const puppeteer = require("puppeteer-core");
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 const chromium = require("@sparticuz/chromium");
 
 // Reusable error handling function
