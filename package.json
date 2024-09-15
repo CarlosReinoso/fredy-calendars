@@ -3,6 +3,8 @@
     "@sparticuz/chromium": "^127.0.0",
     "chrome-aws-lambda": "^10.1.0",
     "fs": "0.0.1-security",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
     "puppeteer-core": "^10.4.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
@@ -22,5 +24,8 @@
   "homepage": "https://github.com/choraria/pptr-io#readme",
   "engines": {
     "node": "16.x"
+  },
+  "scripts": {
+    "postinstall": "pnpm install puppeteer-extra-plugin-stealth"
   }
 }

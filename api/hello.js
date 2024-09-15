@@ -1,64 +1,46 @@
 const fs = require("fs");
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const path = require("path");
+const handleError = require("../util/errorHandler");
+const { isProd } = require("../util/isProd");
 
-const stealth = StealthPlugin();
-
-// Disable specific evasions if causing issues
-stealth.enabledEvasions.delete("chrome.app");
-stealth.enabledEvasions.delete('chrome.csi');
-stealth.enabledEvasions.delete('chrome.loadTimes');
-stealth.enabledEvasions.delete('chrome.runtime');
-
-puppeteer.use(stealth);
 const chromium = require("@sparticuz/chromium");
+const puppeteer = require('puppeteer-extra').use(require('puppeteer-extra-plugin-stealth')());
 
-// Reusable error handling function
-async function handleError(
-  page,
-  error,
-  res,
-  errorMessage = "An error occurred"
-) {
+// Configure Puppeteer-Extra to use Puppeteer-Core
+puppeteer.launcher = require('puppeteer-core');
+
+// Function to log files and directories in node_modules
+
+// Function to log files and directories in node_modules
+function logNodeModules() {
+  // Adjust the path to point one level up from __dirname to reach the project root
+  const modulesPath = path.resolve(
+    __dirname,
+    "..", // Move one level up to the project root
+    "node_modules",
+    "puppeteer-extra-plugin-stealth",
+    "evasions"
+  );
+
   try {
-    // Capture a screenshot for debugging
-    await page.screenshot({ path: "/tmp/screenshot.png", fullPage: true });
-    console.log("Screenshot taken for debugging.");
-
-    // Read the screenshot file
-    const screenshot = fs.readFileSync("/tmp/screenshot.png");
-
-    // Log the error message
-    console.error(`${errorMessage}:`, error);
-
-    // Set response headers and send the screenshot as an image
-    res.setHeader("Content-Type", "image/png");
-    res.status(500);
-    res.send(screenshot); // Directly send the raw image data
-  } catch (screenshotError) {
-    // Handle errors that occur during screenshot capture or logging
-    console.error(
-      "Failed to capture screenshot or send response:",
-      screenshotError
-    );
-    res.status(500).json({
-      message: "Failed to capture screenshot during error handling.",
-      error: screenshotError.message,
-    });
-  } finally {
-    // Close the browser to ensure cleanup
-    if (page.browser()) await page.browser().close();
+    const files = fs.readdirSync(modulesPath);
+    console.log("Evasions found in puppeteer-extra-plugin-stealth:", files);
+  } catch (error) {
+    console.error("Error reading node_modules:", error);
   }
 }
 
-async function takeScreenshot(page, name) {
-  const screenshotPath = `/tmp/${name}.png`; // Adjust the path if needed
-  await page.screenshot({ path: screenshotPath, fullPage: true });
-  console.log(`Screenshot taken: ${name}`);
-  return screenshotPath;
-}
+// Call the function at the start of your main module
+logNodeModules();
+
+// Reusable error handling function
 
 module.exports = async (req, res) => {
+  console.log(
+    "Launching Puppeteer with the following path:",
+    await chromium.executablePath()
+  );
+
   let browser = null;
   try {
     console.log("Launching browser...");
@@ -75,7 +57,9 @@ module.exports = async (req, res) => {
         "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
       ],
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath: isProd
+        ? await chromium.executablePath()
+        : "C:\\Users\\jrpca\\Documents\\web-agency\\chromium\\chromium\\win64-1355085\\chrome-win\\chrome.exe",
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
@@ -293,14 +277,12 @@ module.exports = async (req, res) => {
       await page.click('button[type="submit"]');
       console.log("Clicked login button.");
       await page.waitForNavigation({ waitUntil: "networkidle2" });
-    } catch (loginError) {
-      console.error("Error during login:", loginError);
-      await browser.close();
-      return res.json(
-        {
-          message: "Login failed, please check your credentials and selectors.",
-        },
-        { status: 500 }
+    } catch (error) {
+      await handleError(
+        page,
+        error,
+        res,
+        "Error during login"
       );
     }
 
