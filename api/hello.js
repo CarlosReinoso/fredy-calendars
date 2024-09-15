@@ -16,7 +16,47 @@ puppeteer.use(UserDataDirPlugin());
 // Configure Puppeteer-Extra to use Puppeteer-Core
 puppeteer.launcher = require("puppeteer-core");
 
+// Function to log files and directories in node_modules
+
+// Function to log files and directories in node_modules
+function logNodeModules() {
+  const modulePath = path.resolve(
+    "node_modules",
+    "puppeteer-extra-plugin-user-preferences"
+  );
+  if (fs.existsSync(modulePath)) {
+    console.log(`Module found at: ${modulePath}`);
+  } else {
+    console.error("!!! Module not found at the expected path:", modulePath);
+  }
+  // Adjust the path to point one level up from __dirname to reach the project root
+  const modulesPath = path.resolve(
+    __dirname,
+    "..", // Move one level up to the project root
+    "node_modules",
+    "puppeteer-extra-plugin-stealth",
+    "evasions"
+  );
+
+  try {
+    const files = fs.readdirSync(modulesPath);
+    console.log("Evasions found in puppeteer-extra-plugin-stealth:", files);
+  } catch (error) {
+    console.error("Error reading node_modules:", error);
+  }
+}
+
+// Call the function at the start of your main module
+
+// Reusable error handling function
+
 module.exports = async (req, res) => {
+  logNodeModules();
+  console.log(
+    "Launching Puppeteer with the following path:",
+    await chromium.executablePath()
+  );
+
   let browser = null;
   try {
     console.log("Launching browser...");
