@@ -4,15 +4,27 @@ const handleError = require("../util/errorHandler");
 const { isProd } = require("../util/isProd");
 
 const chromium = require("@sparticuz/chromium");
-const puppeteer = require('puppeteer-extra').use(require('puppeteer-extra-plugin-stealth')());
-
+const puppeteer = require("puppeteer-extra").use(
+  require("puppeteer-extra-plugin-stealth")()
+);
+const UserPreferencesPlugin = require("puppeteer-extra-plugin-user-preferences");
+puppeteer.use(UserPreferencesPlugin());
 // Configure Puppeteer-Extra to use Puppeteer-Core
-puppeteer.launcher = require('puppeteer-core');
+puppeteer.launcher = require("puppeteer-core");
 
 // Function to log files and directories in node_modules
 
 // Function to log files and directories in node_modules
 function logNodeModules() {
+  const modulePath = path.resolve(
+    "node_modules",
+    "puppeteer-extra-plugin-user-preferences"
+  );
+  if (fs.existsSync(modulePath)) {
+    console.log(`Module found at: ${modulePath}`);
+  } else {
+    console.error("!!! Module not found at the expected path:", modulePath);
+  }
   // Adjust the path to point one level up from __dirname to reach the project root
   const modulesPath = path.resolve(
     __dirname,
@@ -278,12 +290,7 @@ module.exports = async (req, res) => {
       console.log("Clicked login button.");
       await page.waitForNavigation({ waitUntil: "networkidle2" });
     } catch (error) {
-      await handleError(
-        page,
-        error,
-        res,
-        "Error during login"
-      );
+      await handleError(page, error, res, "Error during login");
     }
 
     await new Promise((resolve) => setTimeout(resolve, 5000));
