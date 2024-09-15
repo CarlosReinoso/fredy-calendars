@@ -79,21 +79,12 @@ module.exports = async (req, res) => {
 
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      const divExists = await page.evaluate(() => {
-        return !!document.querySelector("div._wfo3ii"); // Check if the element exists
-      });
-      console.log("🚀 ~ divExists ~ divExists:", divExists);
-
       const buttonEl = await page.evaluate(() => {
         const inputPass = document.querySelector(
           'button[data-veloute="submit-btn-cypress"]'
         );
         const buttonExist = document.querySelector('button[type="submit"]');
-        console.log("🚀 ~ buttonEl ~ buttonExist:", buttonExist.outerHTML);
-        // const form = document.querySelector('form');
-        // console.log("🚀 ~ buttonEl ~ form:", form)
-        const divExist = document.querySelector("div._wfo3ii");
-        console.log("🚀 ~ buttonEl ~ divExist:", divExist?.outerHTML);
+        console.log("🚀 ~ buttonEl ~ buttonExist:", !!buttonExist);
         return inputPass ? inputPass.outerHTML : "buttonEl";
       });
       console.log("🚀 ~ buttonEl ~ buttonEl:", buttonEl);
@@ -181,19 +172,14 @@ module.exports = async (req, res) => {
       //   });
       //   console.log("🚀 ~ form ~ form:", form);
 
-      await page.screenshot({ path: "/tmp/screenshot.png", fullPage: true }); // Use a temporary path
-      console.log("Screenshot taken for debugging.");
-
-      const screenshot = fs.readFileSync("/tmp/screenshot.png");
-      res.setHeader("Content-Type", "image/png");
-      return res.send(screenshot);
-
       await new Promise((resolve) => setTimeout(resolve, 5000));
-      const inputEl = await page.evaluate(() => {
+      await page.evaluate(() => {
         const inputPass = document.querySelector('input[type="password"]');
-        return inputPass ? inputPass.outerHTML : "Main content not found";
+        console.log(
+          "🚀 ~ awaitpage.evaluate ~ inputPass:",
+          inputPass?.outerHTML
+        );
       });
-      console.log("🚀 ~ inputEl ~ inputEl:", inputEl);
 
       try {
         await page.evaluate(() => {
@@ -243,6 +229,15 @@ module.exports = async (req, res) => {
         { status: 500 }
       );
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await page.screenshot({ path: "/tmp/screenshot.png", fullPage: true }); // Use a temporary path
+    console.log("Screenshot taken for debugging.");
+
+    const screenshot = fs.readFileSync("/tmp/screenshot.png");
+    res.setHeader("Content-Type", "image/png");
+    return res.send(screenshot);
+
     // Navigate to the calendar page after successful login
     await page.goto(
       "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/",
