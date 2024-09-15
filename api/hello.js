@@ -2,8 +2,6 @@ const fs = require("fs");
 const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
 
-const fs = require("fs");
-
 // Reusable error handling function
 async function handleError(
   page,
