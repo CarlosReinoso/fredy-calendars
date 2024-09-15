@@ -76,12 +76,28 @@ module.exports = async (req, res) => {
         timeout: 30000,
       });
 
-      console.log(
-        "🚀 ~ button[data-veloute=submit-btn-cypress]",
-        await page.evaluate(() =>
-          document.querySelector('button[data-veloute="submit-btn-cypress"]')
-        )
-      );
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      const divExists = await page.evaluate(() => {
+        return !!document.querySelector("div._wfo3ii"); // Check if the element exists
+      });
+      console.log("🚀 ~ divExists ~ divExists:", divExists);
+
+      const buttonEl = await page.evaluate(() => {
+        const inputPass = document.querySelector(
+          'button[data-veloute="submit-btn-cypress"]'
+        );
+        const buttonExist = document.querySelector(
+          'button[type="submit"]'
+        );
+        console.log("🚀 ~ buttonEl ~ buttonExist:", buttonExist.outerHTML)
+        // const form = document.querySelector('form');
+        // console.log("🚀 ~ buttonEl ~ form:", form)
+        const divExist = document.querySelector("div._wfo3ii");
+        console.log("🚀 ~ buttonEl ~ divExist:", divExist?.outerHTML);
+        return inputPass ? inputPass.outerHTML : "buttonEl";
+      });
+      console.log("🚀 ~ buttonEl ~ buttonEl:", buttonEl);
 
       try {
         await page.evaluate(() => {
