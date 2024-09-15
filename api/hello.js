@@ -6,6 +6,9 @@ const stealth = StealthPlugin();
 
 // Disable specific evasions if causing issues
 stealth.enabledEvasions.delete("chrome.app");
+stealth.enabledEvasions.delete('chrome.csi');
+stealth.enabledEvasions.delete('chrome.loadTimes');
+stealth.enabledEvasions.delete('chrome.runtime');
 
 puppeteer.use(stealth);
 const chromium = require("@sparticuz/chromium");
