@@ -21,6 +21,6 @@
   },
   "homepage": "https://github.com/choraria/pptr-io#readme",
   "engines": {
-    "node": "18.x"
+    "node": "16.x"
   }
 }

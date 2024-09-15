@@ -1,9 +1,14 @@
 const fs = require("fs");
-const puppeteer = require("puppeteer-extra").use(
-  require("puppeteer-extra-plugin-stealth")()
-);
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+
+const stealth = StealthPlugin();
+
+// Disable specific evasions if causing issues
+stealth.enabledEvasions.delete("chrome.app");
+
+puppeteer.use(stealth);
 const chromium = require("@sparticuz/chromium");
-puppeteer.launcher = require("puppeteer-core");
 
 // Reusable error handling function
 async function handleError(
