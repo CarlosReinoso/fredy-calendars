@@ -2,6 +2,9 @@ const fs = require("fs");
 const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
 
+const fs = require("fs");
+
+// Reusable error handling function
 async function handleError(
   page,
   error,
@@ -19,13 +22,10 @@ async function handleError(
     // Log the error message
     console.error(`${errorMessage}:`, error);
 
-    // Set response headers and send the screenshot along with the error message
+    // Set response headers and send the screenshot as an image
     res.setHeader("Content-Type", "image/png");
-    res.status(500).json({
-      message: errorMessage,
-      error: error.message,
-      screenshot: `data:image/png;base64,${screenshot.toString("base64")}`, // Send as base64 if needed
-    });
+    res.status(500);
+    res.send(screenshot); // Directly send the raw image data
   } catch (screenshotError) {
     // Handle errors that occur during screenshot capture or logging
     console.error(
@@ -129,20 +129,20 @@ module.exports = async (req, res) => {
       try {
         // Evaluate and return information about the elements
         const evaluationResults = await page.evaluate(() => {
-          const inputPass = document.querySelector(
+          const inputEmailField = document.querySelector(
             'button[data-veloute="submit-btn-cypress"]'
           );
           const buttonExist = document.querySelector('button[type="submit"]');
 
           // Return an object with the results
           return {
-            inputPassExists: !!inputPass,
-            buttonExistExists: !!buttonExist,
+            inputEmailExist: !!inputEmailField,
+            buttonEmailExistExists: !!buttonExist,
           };
         });
 
         // Log the results in Node.js context
-        console.log("🚀 ~ inputPassExists:", evaluationResults);
+        console.log("🚀 ~ emailPage:", evaluationResults);
       } catch (error) {
         console.error("Error during page evaluation:", error);
       }
@@ -224,11 +224,11 @@ module.exports = async (req, res) => {
       }
       // Check if the password input is available and interact with it inside the page context
 
-        // const form = await page.evaluate(() => {
-        //   const formEL = document.querySelector("form");
-        //   return formEL ? formEL.outerHTML : "Main content not found";
-        // });
-        // console.log("🚀 ~ form ~ form:", form);
+      // const form = await page.evaluate(() => {
+      //   const formEL = document.querySelector("form");
+      //   return formEL ? formEL.outerHTML : "Main content not found";
+      // });
+      // console.log("🚀 ~ form ~ form:", form);
 
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
