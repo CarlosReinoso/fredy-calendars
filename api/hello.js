@@ -1,3 +1,4 @@
+const fs = require("fs");
 const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
 
@@ -87,10 +88,8 @@ module.exports = async (req, res) => {
         const inputPass = document.querySelector(
           'button[data-veloute="submit-btn-cypress"]'
         );
-        const buttonExist = document.querySelector(
-          'button[type="submit"]'
-        );
-        console.log("🚀 ~ buttonEl ~ buttonExist:", buttonExist.outerHTML)
+        const buttonExist = document.querySelector('button[type="submit"]');
+        console.log("🚀 ~ buttonEl ~ buttonExist:", buttonExist.outerHTML);
         // const form = document.querySelector('form');
         // console.log("🚀 ~ buttonEl ~ form:", form)
         const divExist = document.querySelector("div._wfo3ii");
@@ -150,7 +149,30 @@ module.exports = async (req, res) => {
       } catch (error) {
         console.error("Error clicking 'Continue' button:", error);
       }
+      try {
+        await page.click('button[type="submit"]', { delay: 100 }); // Adding a small delay
+        console.log("Button clicked successfully.");
+      } catch (clickError) {
+        console.error("Error clicking the button:", clickError);
+      }
+      const retryClick = async (selector, attempts = 3) => {
+        for (let i = 0; i < attempts; i++) {
+          try {
+            await page.click(selector);
+            console.log(`Click attempt ${i + 1} succeeded.`);
+            return true;
+          } catch (error) {
+            console.log(`Click attempt ${i + 1} failed:`, error);
+            await page.waitForTimeout(1000); // Wait before retrying
+          }
+        }
+        return false;
+      };
 
+      const clickSuccess = await retryClick('button[type="submit"]');
+      if (!clickSuccess) {
+        console.error("Failed to click the button after multiple attempts.");
+      }
       // Check if the password input is available and interact with it inside the page context
 
       //   const form = await page.evaluate(() => {
@@ -158,6 +180,14 @@ module.exports = async (req, res) => {
       //     return formEL ? formEL.outerHTML : "Main content not found";
       //   });
       //   console.log("🚀 ~ form ~ form:", form);
+
+      await page.screenshot({ path: "/tmp/screenshot.png", fullPage: true }); // Use a temporary path
+      console.log("Screenshot taken for debugging.");
+
+      const screenshot = fs.readFileSync("/tmp/screenshot.png");
+      res.setHeader("Content-Type", "image/png");
+      return res.send(screenshot);
+
       await new Promise((resolve) => setTimeout(resolve, 5000));
       const inputEl = await page.evaluate(() => {
         const inputPass = document.querySelector('input[type="password"]');

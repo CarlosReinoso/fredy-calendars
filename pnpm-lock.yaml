@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@sparticuz/chromium': ^127.0.0
   chrome-aws-lambda: ^10.1.0
+  fs: 0.0.1-security
   puppeteer-core: ^10.4.0
   puppeteer-extra: ^3.3.6
   puppeteer-extra-plugin-stealth: ^2.11.2
@@ -10,6 +11,7 @@ specifiers:
 dependencies:
   '@sparticuz/chromium': 127.0.0
   chrome-aws-lambda: 10.1.0_puppeteer-core@10.4.0
+  fs: 0.0.1-security
   puppeteer-core: 10.4.0
   puppeteer-extra: 3.3.6_puppeteer-core@10.4.0
   puppeteer-extra-plugin-stealth: 2.11.2_puppeteer-extra@3.3.6
@@ -268,6 +270,10 @@ packages:
 
   /fs.realpath/1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
+    dev: false
+
+  /fs/0.0.1-security:
+    resolution: {integrity: sha512-3XY9e1pP0CVEUCdj5BmfIZxRBTSDycnbqhIOGec9QYtmVH2fbLpj86CFWkrNOkt/Fvty4KZG5lTglL9j/gJ87w==}
     dev: false
 
   /get-stream/5.2.0:
