@@ -7,8 +7,12 @@ const chromium = require("@sparticuz/chromium");
 const puppeteer = require("puppeteer-extra").use(
   require("puppeteer-extra-plugin-stealth")()
 );
+
 const UserPreferencesPlugin = require("puppeteer-extra-plugin-user-preferences");
+const UserDataDirPlugin = require("puppeteer-extra-plugin-user-data-dir");
+
 puppeteer.use(UserPreferencesPlugin());
+puppeteer.use(UserDataDirPlugin());
 // Configure Puppeteer-Extra to use Puppeteer-Core
 puppeteer.launcher = require("puppeteer-core");
 
@@ -43,11 +47,11 @@ function logNodeModules() {
 }
 
 // Call the function at the start of your main module
-logNodeModules();
 
 // Reusable error handling function
 
 module.exports = async (req, res) => {
+  logNodeModules();
   console.log(
     "Launching Puppeteer with the following path:",
     await chromium.executablePath()
