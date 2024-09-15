@@ -27,6 +27,7 @@
     "node": "16.x"
   },
   "scripts": {
-    "postinstall": "pnpm install puppeteer-extra-plugin-stealth puppeteer-extra-plugin-user-preferences"
+    "postinstall": "pnpm install puppeteer-extra-plugin-stealth puppeteer-extra-plugin-user-preferences",
+    "build": "pnpm install && pnpm run build"
   }
 }
