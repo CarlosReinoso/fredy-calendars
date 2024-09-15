@@ -2,6 +2,53 @@ const fs = require("fs");
 const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
 
+async function handleError(
+  page,
+  error,
+  res,
+  errorMessage = "An error occurred"
+) {
+  try {
+    // Capture a screenshot for debugging
+    await page.screenshot({ path: "/tmp/screenshot.png", fullPage: true });
+    console.log("Screenshot taken for debugging.");
+
+    // Read the screenshot file
+    const screenshot = fs.readFileSync("/tmp/screenshot.png");
+
+    // Log the error message
+    console.error(`${errorMessage}:`, error);
+
+    // Set response headers and send the screenshot along with the error message
+    res.setHeader("Content-Type", "image/png");
+    res.status(500).json({
+      message: errorMessage,
+      error: error.message,
+      screenshot: `data:image/png;base64,${screenshot.toString("base64")}`, // Send as base64 if needed
+    });
+  } catch (screenshotError) {
+    // Handle errors that occur during screenshot capture or logging
+    console.error(
+      "Failed to capture screenshot or send response:",
+      screenshotError
+    );
+    res.status(500).json({
+      message: "Failed to capture screenshot during error handling.",
+      error: screenshotError.message,
+    });
+  } finally {
+    // Close the browser to ensure cleanup
+    if (page.browser()) await page.browser().close();
+  }
+}
+
+async function takeScreenshot(page, name) {
+  const screenshotPath = `/tmp/${name}.png`; // Adjust the path if needed
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  console.log(`Screenshot taken: ${name}`);
+  return screenshotPath;
+}
+
 module.exports = async (req, res) => {
   let browser = null;
   try {
@@ -79,15 +126,26 @@ module.exports = async (req, res) => {
 
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      const buttonEl = await page.evaluate(() => {
-        const inputPass = document.querySelector(
-          'button[data-veloute="submit-btn-cypress"]'
-        );
-        const buttonExist = document.querySelector('button[type="submit"]');
-        console.log("🚀 ~ buttonEl ~ buttonExist:", !!buttonExist);
-        return inputPass ? inputPass.outerHTML : "buttonEl";
-      });
-      console.log("🚀 ~ buttonEl ~ buttonEl:", buttonEl);
+      try {
+        // Evaluate and return information about the elements
+        const evaluationResults = await page.evaluate(() => {
+          const inputPass = document.querySelector(
+            'button[data-veloute="submit-btn-cypress"]'
+          );
+          const buttonExist = document.querySelector('button[type="submit"]');
+
+          // Return an object with the results
+          return {
+            inputPassExists: !!inputPass,
+            buttonExistExists: !!buttonExist,
+          };
+        });
+
+        // Log the results in Node.js context
+        console.log("🚀 ~ inputPassExists:", evaluationResults);
+      } catch (error) {
+        console.error("Error during page evaluation:", error);
+      }
 
       try {
         await page.evaluate(() => {
@@ -166,20 +224,27 @@ module.exports = async (req, res) => {
       }
       // Check if the password input is available and interact with it inside the page context
 
-      //   const form = await page.evaluate(() => {
-      //     const formEL = document.querySelector("form");
-      //     return formEL ? formEL.outerHTML : "Main content not found";
-      //   });
-      //   console.log("🚀 ~ form ~ form:", form);
+        // const form = await page.evaluate(() => {
+        //   const formEL = document.querySelector("form");
+        //   return formEL ? formEL.outerHTML : "Main content not found";
+        // });
+        // console.log("🚀 ~ form ~ form:", form);
 
       await new Promise((resolve) => setTimeout(resolve, 5000));
-      await page.evaluate(() => {
-        const inputPass = document.querySelector('input[type="password"]');
-        console.log(
-          "🚀 ~ awaitpage.evaluate ~ inputPass:",
-          inputPass?.outerHTML
-        );
-      });
+
+      try {
+        // Evaluate the page to find the input element and return its outerHTML
+        const inputPassHTML = await page.evaluate(() => {
+          const inputPass = document.querySelector('input[type="password"]');
+          // Return the outerHTML if the input exists, otherwise return null
+          return inputPass ? inputPass.outerHTML : null;
+        });
+
+        // Log the outerHTML outside the evaluate function
+        console.log("🚀 ~ inputPassHTML:", inputPassHTML);
+      } catch (error) {
+        console.log("🚀 ~ module.exports= ~ error: input Password", error);
+      }
 
       try {
         await page.evaluate(() => {
@@ -204,12 +269,12 @@ module.exports = async (req, res) => {
         });
         console.log("Password field found and filled.");
       } catch (error) {
-        console.error("Error interacting with the password field:", error);
-        await browser.close();
-        res.statusCode = 500;
-        return res.json({
-          message: "Failed to interact with the password field.",
-        });
+        await handleError(
+          page,
+          error,
+          res,
+          "Failed to interact with the password field."
+        );
       }
 
       await page.waitForSelector('button[type="submit"]', {
