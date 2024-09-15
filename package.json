@@ -24,10 +24,6 @@
   },
   "homepage": "https://github.com/choraria/pptr-io#readme",
   "engines": {
-    "node": "16.x"
-  },
-  "scripts": {
-    "postinstall": "pnpm install puppeteer-extra-plugin-stealth puppeteer-extra-plugin-user-preferences",
-    "build": "pnpm install && pnpm run build"
+    "node": "20.x"
   }
 }
