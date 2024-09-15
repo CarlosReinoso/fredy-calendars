@@ -1,9 +1,9 @@
 const fs = require("fs");
-// const puppeteer = require("puppeteer-core");
-const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-puppeteer.use(StealthPlugin());
+const puppeteer = require("puppeteer-extra").use(
+  require("puppeteer-extra-plugin-stealth")()
+);
 const chromium = require("@sparticuz/chromium");
+puppeteer.launcher = require("puppeteer-core");
 
 // Reusable error handling function
 async function handleError(
