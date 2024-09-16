@@ -35,4 +35,19 @@ async function handleError(
   }
 }
 
-module.exports = handleError;
+async function sendPageHTML(page, res) {
+  try {
+    const pageHTML = await page.content();
+
+    console.log("Captured HTML content of the page.");
+
+    res.setHeader("Content-Type", "text/html");
+
+    return res.send(pageHTML);
+  } catch (error) {
+    console.error("Error capturing page HTML:", error);
+    res.status(500).send("Failed to capture HTML content.");
+  }
+}
+
+module.exports = { handleError, sendPageHTML };

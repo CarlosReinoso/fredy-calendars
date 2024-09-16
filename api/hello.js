@@ -1,5 +1,5 @@
 const fs = require("fs");
-const handleError = require("../util/errorHandler");
+const { handleError, sendPageHTML } = require("../util/errorHandler");
 const { isProd } = require("../util/isProd");
 
 const chromium = require("@sparticuz/chromium");
@@ -154,18 +154,14 @@ module.exports = async (req, res) => {
     await delay(5000);
 
     const is2AuthModal = await handle2AuthModal(page);
-    console.log("🚀 ~ module.exports= ~ is2AuthModal:", is2AuthModal)
     if (is2AuthModal) {
       await clickSmsButton(page);
     }
 
     await delay(5000);
-    await handleError(
-      page,
-      "error",
-      res,
-      "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/"
-    );
+
+    await sendPageHTML(page, res);
+
     const availabilityPage =
       "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/";
     await page.goto(`${availabilityPage}`, { waitUntil: `networkidle2` });
