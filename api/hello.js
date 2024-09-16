@@ -22,53 +22,18 @@ puppeteer.launcher = require("puppeteer-core");
 
 const email = process.env.AIRBNB_LOGIN;
 const password = process.env.AIRBNB_PASSWORD;
-console.log("🚀 ~ password:", password);
+
+const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
 
 module.exports = async (req, res) => {
   logNodeModules();
-  console.log(
-    "Launching Puppeteer with the following path:",
-    await chromium.executablePath()
-  );
 
   let browser = null;
+  let page = null;
   try {
-    console.log("Launching browser...");
+    console.log("Setting up Puppeteer...");
 
-    browser = await puppeteer.launch({
-      args: [
-        ...chromium.args,
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-blink-features=AutomationControlled",
-        "--disable-web-security",
-        "--disable-features=IsolateOrigins,site-per-process",
-        "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
-      ],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: isProd
-        ? await chromium.executablePath()
-        : "C:\\Users\\jrpca\\Documents\\web-agency\\chromium\\chromium\\win64-1355085\\chrome-win\\chrome.exe",
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
-    });
-    console.log("Browser launched successfully");
-
-    const page = await browser.newPage();
-
-    // Add additional stealth configurations
-    await page.evaluateOnNewDocument(() => {
-      // Avoid detection by overriding navigator properties
-      Object.defineProperty(navigator, "webdriver", { get: () => false });
-      Object.defineProperty(navigator, "plugins", {
-        get: () => [1, 2, 3, 4, 5],
-      });
-      Object.defineProperty(navigator, "languages", {
-        get: () => ["en-US", "en"],
-      });
-      window.chrome = { runtime: {} };
-    });
+    ({ browser, page } = await setupPuppeteer());
 
     await page.goto("https://www.airbnb.com/login", {
       waitUntil: "networkidle2",
@@ -182,7 +147,7 @@ module.exports = async (req, res) => {
       });
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await delay(2000);
 
     try {
       console.log("🚀 Attempting to click the Refresh button...");
