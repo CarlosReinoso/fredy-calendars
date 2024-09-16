@@ -149,6 +149,22 @@ module.exports = async (req, res) => {
     // Navigate to the calendar page after successful login
     await delay(5000);
     
+    try {
+      // Log the page content when the verification prompt appears
+      const pageContent = await page.content();
+
+      // Send the HTML content as a response so you can view it in the browser
+      res.setHeader("Content-Type", "text/html"); // Set content type to HTML for better rendering
+      return res.send(pageContent); // Send the full page content
+    } catch (error) {
+      console.error("Error capturing page content:", error);
+      res.statusCode = 500;
+      return res.json({
+        message: "Error capturing page content",
+        error,
+      });
+    }
+
     await handleError(
       page,
       "error",
