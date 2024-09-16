@@ -1,5 +1,4 @@
 const fs = require("fs");
-const path = require("path");
 const handleError = require("../util/errorHandler");
 const { isProd } = require("../util/isProd");
 
@@ -10,45 +9,16 @@ const puppeteer = require("puppeteer-extra").use(
 
 const UserPreferencesPlugin = require("puppeteer-extra-plugin-user-preferences");
 const UserDataDirPlugin = require("puppeteer-extra-plugin-user-data-dir");
+const { logNodeModules } = require("../util/hasPaths");
+const { delay } = require("../util");
 
 puppeteer.use(UserPreferencesPlugin());
 puppeteer.use(UserDataDirPlugin());
-// Configure Puppeteer-Extra to use Puppeteer-Core
 puppeteer.launcher = require("puppeteer-core");
 
-// Function to log files and directories in node_modules
-
-// Function to log files and directories in node_modules
-function logNodeModules() {
-  const modulePath = path.resolve(
-    "node_modules",
-    "puppeteer-extra-plugin-user-preferences"
-  );
-  if (fs.existsSync(modulePath)) {
-    console.log(`Module found at: ${modulePath}`);
-  } else {
-    console.error("!!! Module not found at the expected path:", modulePath);
-  }
-  // Adjust the path to point one level up from __dirname to reach the project root
-  const modulesPath = path.resolve(
-    __dirname,
-    "..", // Move one level up to the project root
-    "node_modules",
-    "puppeteer-extra-plugin-stealth",
-    "evasions"
-  );
-
-  try {
-    const files = fs.readdirSync(modulesPath);
-    console.log("Evasions found in puppeteer-extra-plugin-stealth:", files);
-  } catch (error) {
-    console.error("Error reading node_modules:", error);
-  }
-}
-
-// Call the function at the start of your main module
-
-// Reusable error handling function
+const email = process.env.AIRBNB_LOGIN;
+const password = process.env.AIRBNB_PASSWORD;
+console.log("🚀 ~ password:", password);
 
 module.exports = async (req, res) => {
   logNodeModules();
@@ -96,13 +66,12 @@ module.exports = async (req, res) => {
       window.chrome = { runtime: {} };
     });
 
-    // Go to the Airbnb login page
     await page.goto("https://www.airbnb.com/login", {
       waitUntil: "networkidle2",
     });
-    console.log("🚀 ~ page:");
+    console.log("at: https://www.airbnb.com/login");
 
-    // Click the "Continue with email" button
+    //EMAIL LOGIN METHOD
     try {
       await page.waitForSelector('button[aria-label="Continue with email"]', {
         visible: true,
@@ -118,10 +87,8 @@ module.exports = async (req, res) => {
         "Error clicking 'Continue with email' button:"
       );
     }
-    // Replace with your Airbnb credentials
-    const email = process.env.AIRBNB_LOGIN;
-    const password = process.env.AIRBNB_PASSWORD;
-    // Log in to Airbnb with email
+
+    //EMAIL INPUT AND SUBMIT
     try {
       await page.waitForSelector('input[type="email"]', {
         visible: true,
@@ -136,180 +103,62 @@ module.exports = async (req, res) => {
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
       try {
-        // Evaluate and return information about the elements
-        const evaluationResults = await page.evaluate(() => {
-          const inputEmailField = document.querySelector(
-            'button[data-veloute="submit-btn-cypress"]'
-          );
-          const buttonExist = document.querySelector('button[type="submit"]');
-
-          // Return an object with the results
-          return {
-            inputEmailExist: !!inputEmailField,
-            buttonEmailExistExists: !!buttonExist,
-          };
-        });
-
-        // Log the results in Node.js context
-        console.log("🚀 ~ emailPage:", evaluationResults);
-      } catch (error) {
-        console.error("Error during page evaluation:", error);
-      }
-
-      try {
         await page.evaluate(() => {
           const button = document.querySelector(
             'button[data-veloute="submit-btn-cypress"]'
           );
-
-          if (button && !button.disabled) {
-            button.scrollIntoView({ behavior: "smooth", block: "center" });
-
-            const rect = button.getBoundingClientRect();
-
-            // Simulate mousedown, mouseup, and click events with calculated positions
-            button.dispatchEvent(
-              new MouseEvent("mousedown", {
-                bubbles: true,
-                cancelable: true,
-                clientX: rect.left + rect.width / 2,
-                clientY: rect.top + rect.height / 2,
-                view: window,
-              })
-            );
-
-            button.dispatchEvent(
-              new MouseEvent("mouseup", {
-                bubbles: true,
-                cancelable: true,
-                clientX: rect.left + rect.width / 2,
-                clientY: rect.top + rect.height / 2,
-                view: window,
-              })
-            );
-
-            button.dispatchEvent(
-              new MouseEvent("click", {
-                bubbles: true,
-                cancelable: true,
-                clientX: rect.left + rect.width / 2,
-                clientY: rect.top + rect.height / 2,
-                view: window,
-              })
-            );
-          } else {
-            console.error("Button not clickable or disabled.");
+          if (button) {
+            button.scrollIntoView();
+            button.focus();
+            button.click();
           }
         });
-        console.log(
-          "Attempted to click 'Continue' button using more realistic events."
-        );
-      } catch (error) {
-        console.error("Error clicking 'Continue' button:", error);
-      }
-      try {
-        await page.click('button[type="submit"]', { delay: 100 }); // Adding a small delay
-        console.log("Button clicked successfully.");
+        console.log("Email Button clicked successfully.");
       } catch (clickError) {
-        console.error("Error clicking the button:", clickError);
+        console.error("Error clicking the email button:", clickError);
       }
-      const retryClick = async (selector, attempts = 3) => {
-        for (let i = 0; i < attempts; i++) {
-          try {
-            await page.click(selector);
-            console.log(`Click attempt ${i + 1} succeeded.`);
-            return true;
-          } catch (error) {
-            console.log(`Click attempt ${i + 1} failed:`, error);
-            await page.waitForTimeout(1000); // Wait before retrying
-          }
-        }
-        return false;
-      };
+    } catch (error) {
+      await handleError(page, error, res, "Error during login in EMAIL page");
+    }
 
-      const clickSuccess = await retryClick('button[type="submit"]');
-      if (!clickSuccess) {
-        console.error("Failed to click the button after multiple attempts.");
-      }
-      // Check if the password input is available and interact with it inside the page context
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
-      // const form = await page.evaluate(() => {
-      //   const formEL = document.querySelector("form");
-      //   return formEL ? formEL.outerHTML : "Main content not found";
-      // });
-      // console.log("🚀 ~ form ~ form:", form);
+    //INPUT PASSWORD AND CLICK LOGIN BUTTON
+    try {
+      await page.waitForSelector('input[type="password"]', {
+        visible: true,
+        timeout: 30000,
+      });
+      await page.type('input[type="password"]', password, { delay: 100 });
+      console.log("Password entered successfully.");
+    } catch (error) {
+      await handleError(page, error, res, "Error entering the password:");
+    }
 
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-
-      try {
-        // Evaluate the page to find the input element and return its outerHTML
-        const inputPassHTML = await page.evaluate(() => {
-          const inputPass = document.querySelector('input[type="password"]');
-          // Return the outerHTML if the input exists, otherwise return null
-          return inputPass ? inputPass.outerHTML : null;
-        });
-
-        // Log the outerHTML outside the evaluate function
-        console.log("🚀 ~ inputPassHTML:", inputPassHTML);
-      } catch (error) {
-        console.log("🚀 ~ module.exports= ~ error: input Password", error);
-      }
-
-      try {
-        await page.evaluate(() => {
-          const passwordInput = document.querySelector(
-            'input[data-testid="email-signup-password"]'
-          );
-          const passwordInputTwo = document.querySelector(
-            'input[type="password"]'
-          );
-          console.log(
-            "🚀 ~ awaitpage.evaluate ~ passwordInputTwo:",
-            passwordInputTwo
-          );
-          if (passwordInput) {
-            passwordInput.scrollIntoView();
-            passwordInput.focus();
-            passwordInput.value = ""; // Clear any pre-filled values just in case
-            passwordInput.setAttribute("value", password); // Replace with your password
-          } else {
-            throw new Error("Password input field not found");
-          }
-        });
-        console.log("Password field found and filled.");
-      } catch (error) {
-        await handleError(
-          page,
-          error,
-          res,
-          "Failed to interact with the password field."
-        );
-      }
-
+    try {
       await page.waitForSelector('button[type="submit"]', {
         visible: true,
         timeout: 30000,
       });
-      await page.click('button[type="submit"]');
-      console.log("Clicked login button.");
-      await page.waitForNavigation({ waitUntil: "networkidle2" });
+      await page.click('button[type="submit"]', { delay: 100 });
+      console.log("Log In button clicked successfully.");
     } catch (error) {
-      await handleError(page, error, res, "Error during login");
+      await handleError(page, error, res, "Error clicking the Log In button:");
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    await page.screenshot({ path: "/tmp/screenshot.png", fullPage: true }); // Use a temporary path
-    console.log("Screenshot taken for debugging.");
-
-    const screenshot = fs.readFileSync("/tmp/screenshot.png");
-    res.setHeader("Content-Type", "image/png");
-    return res.send(screenshot);
-
     // Navigate to the calendar page after successful login
-    await page.goto(
-      "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/",
-      { waitUntil: "networkidle2" }
+    await delay(5000);
+    
+    await handleError(
+      page,
+      "error",
+      res,
+      "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/"
     );
+    const availabilityPage =
+      "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/";
+    await page.goto(`${availabilityPage}`, { waitUntil: `networkidle2` });
+    console.log(`at: ${availabilityPage}`);
     // Scroll down to ensure all content is loaded
     await page.evaluate(async () => {
       await new Promise((resolve) => {
@@ -322,11 +171,12 @@ module.exports = async (req, res) => {
             clearInterval(scrollInterval);
             resolve();
           }
-        }, 200); // Adjust this interval to control the scroll speed
+        }, 200);
       });
     });
-    // Wait a moment after scrolling to ensure elements have settled
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // Use a native delay
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     try {
       console.log("🚀 Attempting to click the Refresh button...");
       // Use page.evaluate to find the button and simulate a more realistic click
