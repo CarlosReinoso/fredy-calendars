@@ -11,6 +11,10 @@ const UserPreferencesPlugin = require("puppeteer-extra-plugin-user-preferences")
 const UserDataDirPlugin = require("puppeteer-extra-plugin-user-data-dir");
 const { logNodeModules } = require("../util/hasPaths");
 const { delay } = require("../util");
+const {
+  handle2AuthModal,
+  clickSmsButton,
+} = require("../util/puppeteerAirbnbUtil");
 
 puppeteer.use(UserPreferencesPlugin());
 puppeteer.use(UserDataDirPlugin());
@@ -100,7 +104,7 @@ module.exports = async (req, res) => {
         timeout: 30000,
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await delay(5000);
 
       try {
         await page.evaluate(() => {
@@ -121,7 +125,7 @@ module.exports = async (req, res) => {
       await handleError(page, error, res, "Error during login in EMAIL page");
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await delay(5000);
 
     //INPUT PASSWORD AND CLICK LOGIN BUTTON
     try {
@@ -146,25 +150,16 @@ module.exports = async (req, res) => {
       await handleError(page, error, res, "Error clicking the Log In button:");
     }
 
-    // Navigate to the calendar page after successful login
+    // 2AUTH MODAL
     await delay(5000);
-    
-    try {
-      // Log the page content when the verification prompt appears
-      const pageContent = await page.content();
 
-      // Send the HTML content as a response so you can view it in the browser
-      res.setHeader("Content-Type", "text/html"); // Set content type to HTML for better rendering
-      return res.send(pageContent); // Send the full page content
-    } catch (error) {
-      console.error("Error capturing page content:", error);
-      res.statusCode = 500;
-      return res.json({
-        message: "Error capturing page content",
-        error,
-      });
+    const is2AuthModal = await handle2AuthModal(page);
+    console.log("🚀 ~ module.exports= ~ is2AuthModal:", is2AuthModal)
+    if (is2AuthModal) {
+      await clickSmsButton(page);
     }
 
+    await delay(5000);
     await handleError(
       page,
       "error",

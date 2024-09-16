@@ -26,5 +26,8 @@
   "homepage": "https://github.com/choraria/pptr-io#readme",
   "engines": {
     "node": "20.x"
+  },
+  "devDependencies": {
+    "puppeteer": "^23.3.1"
   }
 }
