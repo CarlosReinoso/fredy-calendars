@@ -68,7 +68,8 @@ async function enterVerificationCode(page) {
       return messages;
     }, codeDigits);
     console.log("Verification Code Entry Results:", result.join("\n"));
-    handleError(page, error, res, "TESTY");
+    await delay(3000);
+    handleError(page, "error", res, "TESTY");
     // return result;
   } catch (error) {
     console.error("Error during entering verification code:", error);
