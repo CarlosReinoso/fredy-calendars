@@ -9,6 +9,7 @@ const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
 const {
   enterCodeApi,
   waitForCodeFromAPI,
+  enterVerificationCode,
 } = require("../services/puppeteer/verificationCode");
 const { default: axios } = require("axios");
 
@@ -31,22 +32,6 @@ module.exports = async (req, res) => {
       waitUntil: "networkidle2",
     });
     console.log("at: https://www.airbnb.com/login");
-
-    ////
-    console.log("Please check your phone for the verification code.");
-
-    // Make an initial request to indicate Puppeteer is waiting
-    await axios.post(enterCodeApi, { waiting: true });
-
-    const code = await Promise.race([
-      waitForCodeFromAPI(),
-      timeout(30000, "Timed out waiting for verification code."),
-    ]);
-    console.log("🚀 ~ module.exports= ~ codeasd:", code);
-
-    return await handleError(page, "error", res, "Error ");
-
-    ////
 
     //EMAIL LOGIN METHOD
     try {
@@ -129,9 +114,13 @@ module.exports = async (req, res) => {
     const is2AuthModal = await handle2AuthModal(page);
     if (is2AuthModal) {
       await clickSmsButton(page);
+      await delay(5000);
+      await enterVerificationCode(page)
     }
 
-    await delay(5000);
+
+
+    return await handleError(page, "error", res, "Error ");
 
     await sendPageHTML(page, res);
 

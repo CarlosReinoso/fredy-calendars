@@ -1,4 +1,3 @@
-const handleError = require("./errorHandler");
 
 async function handle2AuthModal(page) {
   // Check if the pop-up appeared by looking for a specific element
@@ -35,37 +34,11 @@ async function clickSmsButton(page) {
     console.log(hasSmsButton);
     return hasSmsButton;
   } catch (error) {
-    console.error("Error handling verification pop-up:", error);
-    await handleError(page, error, res, "Error during account verification:");
-  }
-}
-
-async function enter2AuthCode(page) {
-  try {
-    const hasSmsButton = await page.evaluate(() => {
-      const buttons = Array.from(document.querySelectorAll("button"));
-      const smsButton = buttons.find((button) =>
-        button.textContent.includes("Text message (SMS)")
-      );
-
-      if (smsButton) {
-        smsButton.click();
-        return "Clicked the 'Text message (SMS)' button."; // Return the success message
-      } else {
-        return "SMS button not found."; // Return the failure message
-      }
-    });
-
-    console.log(hasSmsButton);
-    return hasSmsButton;
-  } catch (error) {
-    console.error("Error handling verification pop-up:", error);
-    await handleError(page, error, res, "Error during account verification:");
+    await handleError(page, error, res, "Error during clicking sms button");
   }
 }
 
 module.exports = {
   handle2AuthModal,
   clickSmsButton,
-  enter2AuthCode,
 };
