@@ -7,7 +7,7 @@ const enterCodeApi = isProd
   ? `${apiBaseUrl}/api/enter-code`
   : "http://localhost:3001/api/enter-code";
 
-async function waitForCodeFromAPI(page) {
+async function waitForCodeFromAPI(page, res) {
   try {
     while (true) {
       const response = await axios.get(enterCodeApi);
@@ -36,12 +36,12 @@ async function clearCodeFromServer(enterCodeApi) {
   }
 }
 
-async function enterVerificationCode(page) {
+async function enterVerificationCode(page, res) {
   console.log("at enterVerificationCode");
   await axios.post(enterCodeApi, { waiting: true });
 
   const code = await Promise.race([
-    waitForCodeFromAPI(page),
+    waitForCodeFromAPI(page, res),
     timeout(30000, "Timed out waiting for verification code."),
   ]);
   console.log(`Success: Received verification code from UI: ${code}`);
