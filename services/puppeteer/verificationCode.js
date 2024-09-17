@@ -42,7 +42,7 @@ async function enterVerificationCode(page) {
 
   const code = await Promise.race([
     waitForCodeFromAPI(),
-    timeout(40000, "Timed out waiting for verification code."),
+    timeout(30000, "Timed out waiting for verification code."),
   ]);
 
   try {
