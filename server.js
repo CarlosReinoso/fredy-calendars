@@ -2,6 +2,9 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const routes = require("./routes/index.js"); // Adjust path as necessary
+const cors = require('cors');
+
+app.use(cors());
 
 app.use(express.json()); // Middleware to parse JSON bodies
 

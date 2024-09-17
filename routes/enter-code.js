@@ -1,38 +1,61 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-// Define the route to handle code submission
-router.post('/enter-code', async (req, res) => {
-    const { code } = req.body;
-    console.log("🚀 ~ router.post ~ code:", code)
+let currentRequestResolver = null;
+console.log("🚀 ~ currentRequestResolver:", currentRequestResolver);
+let verificationCode = null;
+console.log("🚀 ~ verificationCode:", verificationCode);
 
-    if (!code) {
-        return res.status(400).json({ error: 'Verification code is required.' });
-    }
+// POST route to handle code submission
+router.post("/enter-code", (req, res) => {
+  const { code, waiting, clear } = req.body;
+  console.log("🚀 ~ router.post ~ clear:", clear)
+  console.log("🚀 ~ router.post ~ waiting:", waiting);
+  console.log("🚀 ~ router.post ~ code:", code);
 
-    try {
-        // Implement your Puppeteer logic here to handle the verification code input
-        // // Example: using Puppeteer to input the code into Airbnb
-        // if (!global.puppeteerPageInstance) {
-        //     return res.status(400).json({ error: 'Puppeteer is not set up. Please set it up first.' });
-        // }
+  if (clear) {
+    // Clear the stored code and resolver
+    verificationCode = null;
+    currentRequestResolver = null;
+    return res.status(200).json({ message: "Verification code cleared." });
+  }
 
-        // // Simulate entering the code in Puppeteer
-        // await global.puppeteerPageInstance.type('#airlock-code-input_codeinput_0', code[0]);
-        // await global.puppeteerPageInstance.type('#airlock-code-input_codeinput_1', code[1]);
-        // await global.puppeteerPageInstance.type('#airlock-code-input_codeinput_2', code[2]);
-        // await global.puppeteerPageInstance.type('#airlock-code-input_codeinput_3', code[3]);
-        // await global.puppeteerPageInstance.type('#airlock-code-input_codeinput_4', code[4]);
-        // await global.puppeteerPageInstance.type('#airlock-code-input_codeinput_5', code[5]);
+  // If `waiting` is true, set up a resolver for later use
+  if (waiting) {
+    currentRequestResolver = (receivedCode) => {
+      verificationCode = receivedCode; // Store the code temporarily
+      console.log(
+        "🚀 ~ router.post ~ verificationCode:// Store the code temporarily ",
+        verificationCode
+      );
+      currentRequestResolver = null; // Clear resolver after use
+    };
+    return res.status(202).json({ message: "waitinging for code..." });
+  }
 
-        // // Click the submit button or perform the necessary action after entering the code
-        // await global.puppeteerPageInstance.click('button[type="submit"]');
+  // If the code is being submitted and the resolver is set, resolve it
+  if (code && currentRequestResolver) {
+    currentRequestResolver(code);
+    res.status(200).json({ message: "Code received successfully." });
+  } else if (code) {
+    // Directly process the code if no resolver is waitinging (fallback)
+    verificationCode = code;
+    res
+      .status(200)
+      .json({ message: "Code received without waitinging process." });
+  } else {
+    res.status(400).json({ error: "Verification code is required." });
+  }
+});
 
-        res.status(200).json({ message: 'Code entered successfully.' });
-    } catch (error) {
-        console.error('Error entering the verification code:', error);
-        res.status(500).json({ error: 'Failed to enter the verification code.' });
-    }
+// GET route to check if the code is available
+router.get("/enter-code", (req, res) => {
+  if (verificationCode) {
+    res.status(200).json({ code: verificationCode });
+    verificationCode = null; // Clear the code once it has been used
+  } else {
+    res.status(202).json({ message: "No code available yet." }); // Using 202 to indicate ongoing process
+  }
 });
 
 module.exports = router;

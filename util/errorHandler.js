@@ -50,4 +50,12 @@ async function sendPageHTML(page, res) {
   }
 }
 
-module.exports = { handleError, sendPageHTML };
+async function timeout(ms, errorMessage) {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(errorMessage));
+    }, ms);
+  });
+}
+
+module.exports = { handleError, sendPageHTML, timeout };

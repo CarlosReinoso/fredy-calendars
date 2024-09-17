@@ -1,46 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Enter Airbnb Code</title>
 </head>
 <body>
     <h1>Enter the Verification Code</h1>
     <form id="verificationForm">
-        <input type="text" id="code" name="code" placeholder="Enter Code" required>
+        <input
+            type="text"
+            id="code"
+            name="code"
+            placeholder="Enter Code"
+            required
+        />
         <button type="submit">Submit</button>
     </form>
 
     <p id="responseMessage"></p>
 
-    <script>
-        document.getElementById('verificationForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const code = document.getElementById('code').value;
-
-            try {
-                const response = await fetch('http://localhost:3001/api/enter-code', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ code }),
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    document.getElementById('responseMessage').textContent = result.message;
-                } else {
-                    document.getElementById('responseMessage').textContent = result.error;
-                }
-            } catch (error) {
-                document.getElementById('responseMessage').textContent = 'Error sending code: ' + error.message;
-            }
-        });
-    </script>
+    <!-- Link to the external JavaScript file -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -1,29 +1,21 @@
-const fs = require("fs");
-const { handleError, sendPageHTML } = require("../util/errorHandler");
-const { isProd } = require("../util/isProd");
-
-const chromium = require("@sparticuz/chromium");
-const puppeteer = require("puppeteer-extra").use(
-  require("puppeteer-extra-plugin-stealth")()
-);
-
-const UserPreferencesPlugin = require("puppeteer-extra-plugin-user-preferences");
-const UserDataDirPlugin = require("puppeteer-extra-plugin-user-data-dir");
+const { handleError, sendPageHTML, timeout } = require("../util/errorHandler");
 const { logNodeModules } = require("../util/hasPaths");
 const { delay } = require("../util");
 const {
   handle2AuthModal,
   clickSmsButton,
 } = require("../util/puppeteerAirbnbUtil");
-
-puppeteer.use(UserPreferencesPlugin());
-puppeteer.use(UserDataDirPlugin());
-puppeteer.launcher = require("puppeteer-core");
+const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
+const {
+  enterCodeApi,
+  waitForCodeFromAPI,
+} = require("../services/puppeteer/verificationCode");
+const { default: axios } = require("axios");
 
 const email = process.env.AIRBNB_LOGIN;
 const password = process.env.AIRBNB_PASSWORD;
 
-const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
+// Function to perform the actual wait for the code from the API
 
 module.exports = async (req, res) => {
   logNodeModules();
@@ -39,6 +31,22 @@ module.exports = async (req, res) => {
       waitUntil: "networkidle2",
     });
     console.log("at: https://www.airbnb.com/login");
+
+    ////
+    console.log("Please check your phone for the verification code.");
+
+    // Make an initial request to indicate Puppeteer is waiting
+    await axios.post(enterCodeApi, { waiting: true });
+
+    const code = await Promise.race([
+      waitForCodeFromAPI(),
+      timeout(30000, "Timed out waiting for verification code."),
+    ]);
+    console.log("🚀 ~ module.exports= ~ codeasd:", code);
+
+    return await handleError(page, "error", res, "Error ");
+
+    ////
 
     //EMAIL LOGIN METHOD
     try {
