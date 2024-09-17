@@ -1,6 +1,7 @@
 const { default: axios } = require("axios");
 const { isProd, apiBaseUrl } = require("../../util/isProd");
-const { handleError } = require("../../util/errorHandler");
+const { handleError, timeout } = require("../../util/errorHandler");
+const { delay } = require("../../util");
 
 const enterCodeApi = isProd
   ? `${apiBaseUrl}/api/enter-code`
@@ -16,11 +17,15 @@ async function waitForCodeFromAPI() {
         return response.data.code;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await delay(1000);
     }
   } catch (error) {
-    console.error("Error while fetching the code from API:", error);
-    throw new Error("Failed to fetch the verification code.");
+    await handleError(
+      page,
+      error,
+      res,
+      "Error while fetching the code from API"
+    );
   }
 }
 
@@ -37,7 +42,7 @@ async function enterVerificationCode(page) {
 
   const code = await Promise.race([
     waitForCodeFromAPI(),
-    timeout(30000, "Timed out waiting for verification code."),
+    timeout(40000, "Timed out waiting for verification code."),
   ]);
 
   try {
@@ -52,7 +57,7 @@ async function enterVerificationCode(page) {
           input.value = digit;
           input.dispatchEvent(new Event("input", { bubbles: true }));
         } else {
-          await handleError(page, error, res, "No input fields found");
+          await handleError(page, "error", res, "No input fields found");
         }
       });
     }, codeDigits);
