@@ -116,13 +116,11 @@ module.exports = async (req, res) => {
       await clickSmsButton(page);
       await delay(5000);
       await enterVerificationCode(page)
+      await delay(5000);
     }
 
 
 
-    return await handleError(page, "error", res, "Error ");
-
-    await sendPageHTML(page, res);
 
     const availabilityPage =
       "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/";
