@@ -1,18 +1,18 @@
-const { handleError } = require("../util/errorHandler");
 const { logNodeModules } = require("../util/hasPaths");
 const { delay } = require("../util");
 const {
   handle2AuthModal,
   clickSmsButton,
   clickAllRefreshButtons,
+  emailLoginMethod,
+  emailTypeAndClick,
+  typePasswordAndClickLogin,
+  airbnbLoginPage,
 } = require("../util/puppeteerAirbnbUtil");
 const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
 const {
   enterVerificationCode,
 } = require("../services/puppeteer/verificationCode");
-
-const email = process.env.AIRBNB_LOGIN;
-const password = process.env.AIRBNB_PASSWORD;
 
 module.exports = async (req, res) => {
   logNodeModules();
@@ -24,94 +24,16 @@ module.exports = async (req, res) => {
 
     ({ browser, page } = await setupPuppeteer());
 
-    await page.goto("https://www.airbnb.com/login", {
-      waitUntil: "networkidle2",
-    });
-    console.log("at: https://www.airbnb.com/login");
+    await airbnbLoginPage(page, res);
+    await emailLoginMethod(page, res);
+    await emailTypeAndClick(page, res);
+    await typePasswordAndClickLogin(page, res);
 
-    //EMAIL LOGIN METHOD
-    try {
-      await page.waitForSelector('button[aria-label="Continue with email"]', {
-        visible: true,
-        timeout: 30000,
-      });
-      await page.click('button[aria-label="Continue with email"]');
-      console.log("Clicked 'Continue with email' button.");
-    } catch (error) {
-      await handleError(
-        page,
-        error,
-        res,
-        "Error clicking 'Continue with email' button:"
-      );
-    }
-
-    //EMAIL INPUT AND SUBMIT
-    try {
-      await page.waitForSelector('input[type="email"]', {
-        visible: true,
-        timeout: 30000,
-      });
-      await page.type('input[type="email"]', email);
-      await page.waitForSelector('button[data-veloute="submit-btn-cypress"]', {
-        visible: true,
-        timeout: 30000,
-      });
-
-      await delay(5000);
-
-      try {
-        await page.evaluate(() => {
-          const button = document.querySelector(
-            'button[data-veloute="submit-btn-cypress"]'
-          );
-          if (button) {
-            button.scrollIntoView();
-            button.focus();
-            button.click();
-          }
-        });
-        console.log("Email Button clicked successfully.");
-      } catch (clickError) {
-        console.error("Error clicking the email button:", clickError);
-      }
-    } catch (error) {
-      await handleError(page, error, res, "Error during login in EMAIL page");
-    }
-
-    await delay(5000);
-
-    //INPUT PASSWORD AND CLICK LOGIN BUTTON
-    try {
-      await page.waitForSelector('input[type="password"]', {
-        visible: true,
-        timeout: 30000,
-      });
-      await page.type('input[type="password"]', password, { delay: 100 });
-      console.log("Password entered successfully.");
-    } catch (error) {
-      await handleError(page, error, res, "Error entering the password:");
-    }
-
-    try {
-      await page.waitForSelector('button[type="submit"]', {
-        visible: true,
-        timeout: 30000,
-      });
-      await page.click('button[type="submit"]', { delay: 100 });
-      console.log("Log In button clicked successfully.");
-    } catch (error) {
-      await handleError(page, error, res, "Error clicking the Log In button:");
-    }
-
-    // 2AUTH MODAL
-    await delay(5000);
-
-    const is2AuthModal = await handle2AuthModal(page);
+    const is2AuthModal = await handle2AuthModal(page, res);
     if (is2AuthModal) {
-      await clickSmsButton(page);
+      await clickSmsButton(page, res);
       await delay(5000);
-      await enterVerificationCode(page);
+      await enterVerificationCode(page, res);
       await delay(5000);
     }
 
@@ -123,7 +45,7 @@ module.exports = async (req, res) => {
 
     await delay(5000);
 
-    await clickAllRefreshButtons(page);
+    await clickAllRefreshButtons(page, res);
 
     await browser.close();
 

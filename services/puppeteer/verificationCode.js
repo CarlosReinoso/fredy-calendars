@@ -7,7 +7,7 @@ const enterCodeApi = isProd
   ? `${apiBaseUrl}/api/enter-code`
   : "http://localhost:3001/api/enter-code";
 
-async function waitForCodeFromAPI() {
+async function waitForCodeFromAPI(page) {
   try {
     while (true) {
       const response = await axios.get(enterCodeApi);
@@ -16,7 +16,6 @@ async function waitForCodeFromAPI() {
         await clearCodeFromServer(enterCodeApi);
         return response.data.code;
       }
-
       await delay(1000);
     }
   } catch (error) {
@@ -38,33 +37,41 @@ async function clearCodeFromServer(enterCodeApi) {
 }
 
 async function enterVerificationCode(page) {
+  console.log("at enterVerificationCode");
   await axios.post(enterCodeApi, { waiting: true });
 
   const code = await Promise.race([
-    waitForCodeFromAPI(),
+    waitForCodeFromAPI(page),
     timeout(30000, "Timed out waiting for verification code."),
   ]);
+  console.log(`Success: Received verification code from UI: ${code}`);
 
   try {
     const codeDigits = code.split("");
 
     const result = await page.evaluate((digits) => {
-      digits.forEach(async (digit, index) => {
+      const messages = [];
+      digits.forEach((digit, index) => {
         const input = document.querySelector(
           `#airlock-code-input_codeinput_${index}`
         );
         if (input) {
           input.value = digit;
           input.dispatchEvent(new Event("input", { bubbles: true }));
+          messages.push(
+            `Entered digit ${digit} into input field ${index + 1}.`
+          );
         } else {
-          await handleError(page, "error", res, "No input fields found");
+          messages.push(`Input field ${index + 1} not found.`);
         }
       });
+      return messages;
     }, codeDigits);
 
-    console.log("enterVerificationCode", result);
+    console.log("Verification Code Entry Results:", result.join("\n"));
     return result;
   } catch (error) {
+    console.error("Error during entering verification code:", error);
     await handleError(page, error, res, "Error during entering code");
   }
 }
