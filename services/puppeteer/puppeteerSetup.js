@@ -1,4 +1,3 @@
-// setupPuppeteer.js
 const chromium = require("@sparticuz/chromium");
 const puppeteer = require("puppeteer-extra").use(
   require("puppeteer-extra-plugin-stealth")()
@@ -13,9 +12,11 @@ puppeteer.launcher = require("puppeteer-core");
 
 async function setupPuppeteer() {
   try {
-    console.log("Launching Puppeteer with the following path:", await chromium.executablePath());
+    console.log(
+      "Launching Puppeteer with the following path:",
+      await chromium.executablePath()
+    );
 
-    // Launch the browser with the desired configuration
     const browser = await puppeteer.launch({
       args: [
         ...chromium.args,
@@ -37,12 +38,9 @@ async function setupPuppeteer() {
 
     console.log("Browser launched successfully");
 
-    // Create a new page
     const page = await browser.newPage();
 
-    // Add additional stealth configurations
     await page.evaluateOnNewDocument(() => {
-      // Avoid detection by overriding navigator properties
       Object.defineProperty(navigator, "webdriver", { get: () => false });
       Object.defineProperty(navigator, "plugins", {
         get: () => [1, 2, 3, 4, 5],

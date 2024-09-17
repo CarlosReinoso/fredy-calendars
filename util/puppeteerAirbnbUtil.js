@@ -40,32 +40,46 @@ async function clickSmsButton(page) {
   }
 }
 
-async function clickRefreshBtn(page) {
+async function clickAllRefreshButtons(page) {
   try {
     const result = await page.evaluate(() => {
       const buttons = Array.from(document.querySelectorAll("button"));
-      const refreshButton = buttons.find((button) =>
+      const refreshButtons = buttons.filter((button) =>
         button.textContent.includes("Refresh")
       );
 
-      if (refreshButton && !refreshButton.disabled && !refreshButton.getAttribute("aria-disabled")) {
-        refreshButton.click();
-        return "Clicked the 'Refresh' button successfully."; // Return the success message
-      } else {
-        return "Refresh button is disabled, not clickable, or not found."; // Return the failure message
-      }
+      const messages = [];
+
+      refreshButtons.forEach((refreshButton, index) => {
+        if (
+          !refreshButton.disabled &&
+          !refreshButton.getAttribute("aria-disabled")
+        ) {
+          refreshButton.click();
+          messages.push(
+            `Clicked the 'Refresh' button ${index + 1} successfully.`
+          );
+        } else {
+          messages.push(
+            `Refresh button ${
+              index + 1
+            } is disabled, not clickable, or not found.`
+          );
+        }
+      });
+
+      return messages;
     });
 
-    console.log(result);
+    console.log(result.join("\n"));
     return result;
   } catch (error) {
-    await handleError(page, error, res, "Error clicking the Refresh button");
+    await handleError(page, error, res, "Error clicking the Refresh buttons");
   }
 }
-
 
 module.exports = {
   handle2AuthModal,
   clickSmsButton,
-  clickRefreshBtn,
+  clickAllRefreshButtons,
 };

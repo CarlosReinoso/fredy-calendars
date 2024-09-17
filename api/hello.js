@@ -1,23 +1,18 @@
-const { handleError, sendPageHTML, timeout } = require("../util/errorHandler");
+const { handleError } = require("../util/errorHandler");
 const { logNodeModules } = require("../util/hasPaths");
 const { delay } = require("../util");
 const {
   handle2AuthModal,
   clickSmsButton,
-  clickRefreshBtn,
+  clickAllRefreshButtons,
 } = require("../util/puppeteerAirbnbUtil");
 const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
 const {
-  enterCodeApi,
-  waitForCodeFromAPI,
   enterVerificationCode,
 } = require("../services/puppeteer/verificationCode");
-const { default: axios } = require("axios");
 
 const email = process.env.AIRBNB_LOGIN;
 const password = process.env.AIRBNB_PASSWORD;
-
-// Function to perform the actual wait for the code from the API
 
 module.exports = async (req, res) => {
   logNodeModules();
@@ -128,7 +123,7 @@ module.exports = async (req, res) => {
 
     await delay(5000);
 
-    await clickRefreshBtn(page);
+    await clickAllRefreshButtons(page);
 
     await browser.close();
 
