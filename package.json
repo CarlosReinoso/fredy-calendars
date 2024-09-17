@@ -3,15 +3,16 @@
   "description": "puppeteer as a service.",
   "version": "1.0.0",
   "scripts": {
-    "start": "node server.js",
+    "start": "node api/index.js",
     "build": "echo 'No build step required'"
   },
-  "main": "server.js",
+  "main": "index.js",
   "dependencies": {
     "@sparticuz/chromium": "^127.0.0",
     "axios": "^1.7.7",
     "chrome-aws-lambda": "^10.1.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "fs": "0.0.1-security",
     "os": "^0.1.2",
