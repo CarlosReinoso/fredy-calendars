@@ -3,7 +3,8 @@
   "description": "puppeteer as a service.",
   "version": "1.0.0",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "echo 'No build step required'"
   },
   "dependencies": {
     "@sparticuz/chromium": "^127.0.0",
