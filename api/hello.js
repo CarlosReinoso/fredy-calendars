@@ -4,6 +4,7 @@ const { delay } = require("../util");
 const {
   handle2AuthModal,
   clickSmsButton,
+  clickRefreshBtn,
 } = require("../util/puppeteerAirbnbUtil");
 const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
 const {
@@ -115,91 +116,22 @@ module.exports = async (req, res) => {
     if (is2AuthModal) {
       await clickSmsButton(page);
       await delay(5000);
-      await enterVerificationCode(page)
+      await enterVerificationCode(page);
       await delay(5000);
     }
 
-
-
-
     const availabilityPage =
       "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/";
+
     await page.goto(`${availabilityPage}`, { waitUntil: `networkidle2` });
     console.log(`at: ${availabilityPage}`);
-    // Scroll down to ensure all content is loaded
-    await page.evaluate(async () => {
-      await new Promise((resolve) => {
-        const scrollInterval = setInterval(() => {
-          window.scrollBy(0, window.innerHeight);
-          if (
-            window.scrollY + window.innerHeight >=
-            document.body.scrollHeight
-          ) {
-            clearInterval(scrollInterval);
-            resolve();
-          }
-        }, 200);
-      });
-    });
 
-    await delay(2000);
+    await delay(5000);
 
-    try {
-      console.log("🚀 Attempting to click the Refresh button...");
-      // Use page.evaluate to find the button and simulate a more realistic click
-      const refreshClicked = await page.evaluate(() => {
-        // Locate the button by class name
-        const buttons = document.querySelectorAll("button.l1ovpqvx");
-        console.log("🚀 ~ Buttons found:", buttons);
-        let clicked = false;
-        buttons.forEach((button) => {
-          // Check if the button contains the text "Refresh"
-          if (button.innerText.includes("Refresh")) {
-            // Ensure the button is enabled
-            if (!button.disabled && !button.getAttribute("aria-disabled")) {
-              // Scroll the button into view
-              button.scrollIntoView({ behavior: "smooth", block: "center" });
-              // Simulate a more realistic user interaction
-              const rect = button.getBoundingClientRect();
-              const clickEvent = new MouseEvent("click", {
-                bubbles: true,
-                cancelable: true,
-                view: window,
-                clientX: rect.left + rect.width / 2,
-                clientY: rect.top + rect.height / 2,
-              });
-              // Dispatch the click event
-              button.dispatchEvent(clickEvent);
-              clicked = true;
-              console.log("🚀 Refresh button clicked successfully.");
-            } else {
-              console.log("🚀 Refresh button is disabled or not clickable.");
-            }
-          }
-        });
-        return clicked;
-      });
-      if (refreshClicked) {
-        console.log(
-          "Refresh button clicked successfully using enhanced simulation."
-        );
-      } else {
-        console.log("Failed to click the Refresh button, no action taken.");
-        throw new Error("Refresh button not found or could not be clicked.");
-      }
-      // Wait for the page to update or any indication of completion
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // Adjust this timeout based on expected action delay
-    } catch (refreshError) {
-      console.error("Error clicking the Refresh button:", refreshError);
-      return res.json(
-        { message: "Error clicking the Refresh button." },
-        { status: 500 }
-      );
-    }
-    // Close the browser
+    await clickRefreshBtn(page);
+
     await browser.close();
 
-    // Return a successful response
     res.statusCode = 200;
     return res.json({
       message: "Refresh button clicked successfully!",

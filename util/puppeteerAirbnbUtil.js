@@ -1,3 +1,5 @@
+const { handleError } = require("./errorHandler");
+const { delay } = require("../util/index");
 
 async function handle2AuthModal(page) {
   // Check if the pop-up appeared by looking for a specific element
@@ -38,7 +40,32 @@ async function clickSmsButton(page) {
   }
 }
 
+async function clickRefreshBtn(page) {
+  try {
+    const result = await page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll("button"));
+      const refreshButton = buttons.find((button) =>
+        button.textContent.includes("Refresh")
+      );
+
+      if (refreshButton && !refreshButton.disabled && !refreshButton.getAttribute("aria-disabled")) {
+        refreshButton.click();
+        return "Clicked the 'Refresh' button successfully."; // Return the success message
+      } else {
+        return "Refresh button is disabled, not clickable, or not found."; // Return the failure message
+      }
+    });
+
+    console.log(result);
+    return result;
+  } catch (error) {
+    await handleError(page, error, res, "Error clicking the Refresh button");
+  }
+}
+
+
 module.exports = {
   handle2AuthModal,
   clickSmsButton,
+  clickRefreshBtn,
 };
