@@ -27,18 +27,21 @@ async function navigateAndClickSyncButton(page, res) {
       waitUntil: "domcontentloaded",
     });
     console.log(`at ${calendarSyncPageUrl}`);
-    await delay(5000);
+    await delay(20000);
 
     const frames = await page.frames();
-    frames.forEach(frame => console.log("Frame URL: ", frame.url()));
+    frames.forEach((frame) => console.log("Frame URL: ", frame.url()));
     const targetFrame =
       frames.find((frame) =>
         frame.url().includes("PropertyOwner/BookingSettings")
       ) || page.mainFrame();
 
     console.log("hasIframe", !!targetFrame);
-    const syncButton = await targetFrame.waitForSelector('#btn-synchronize-calendars', { visible: true });
-    console.log("🚀 ~ navigateAndClickSyncButton ~ syncButton:", syncButton)
+    const syncButton = await targetFrame.waitForSelector(
+      "#btn-synchronize-calendars",
+      { visible: true, timeout: 60000 }
+    );
+    console.log("🚀 ~ navigateAndClickSyncButton ~ syncButton:");
 
     const syncClicked = await targetFrame.evaluate(() => {
       const button = document.querySelector("#btn-synchronize-calendars");
