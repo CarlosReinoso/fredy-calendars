@@ -39,8 +39,7 @@ async function clearCodeFromServer(enterCodeApi) {
 async function enterVerificationCode(page, res) {
   console.log("at enterVerificationCode");
   await axios.post(enterCodeApi, { waiting: true });
-  await clickButtonByText(page, "Try another option");
-  await handleError(page, "error", res, "TESTY");
+  await clickButtonByText(page, "Send again");
 
   const code = await Promise.race([
     waitForCodeFromAPI(page, res),
