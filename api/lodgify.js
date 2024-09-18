@@ -1,6 +1,7 @@
 const { logNodeModules } = require("../util/hasPaths");
 const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
 const { handleError } = require("../util/errorHandler");
+const { loginToLodgify } = require("../services/lodgify");
 
 module.exports = async (req, res) => {
   logNodeModules();
@@ -17,27 +18,7 @@ module.exports = async (req, res) => {
       waitUntil: "networkidle2",
     });
 
-    // Replace with your Lodgify credentials
-    const email = process.env.LODGIFY_LOGIN;
-    console.log("🚀 ~ module.exports= ~ email:", email);
-    const password = process.env.LODGIFY_PASSWORD;
-    console.log("🚀 ~ module.exports= ~ password:", password);
-
-    // Log in to Lodgify
-    try {
-      await page.waitForSelector('input[type="email"]', { visible: true });
-      await page.type('input[type="email"]', email, { delay: 100 });
-      await page.keyboard.press("Enter");
-
-      await page.waitForSelector('input[type="password"]', { visible: true });
-      await page.type('input[type="password"]', password, { delay: 100 });
-      await page.keyboard.press("Enter");
-
-      await page.waitForNavigation({ waitUntil: "networkidle2" });
-      console.log("Logged into Lodgify successfully.");
-    } catch (error) {
-      await handleError(page, error, res, "Error during Lodgify login");
-    }
+    await loginToLodgify(page, res);
 
     // Navigate to the calendar sync page
     await page.goto(
