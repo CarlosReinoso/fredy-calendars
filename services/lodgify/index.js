@@ -19,7 +19,47 @@ async function loginToLodgify(page, res) {
     await handleError(page, error, res, "Error during Lodgify login");
   }
 }
+async function navigateAndClickSyncButton(page, res) {
+  try {
+    const calendarSyncPageUrl =
+      "https://app.lodgify.com/#/reservation/settings/export-import";
+    await page.goto(calendarSyncPageUrl, {
+      waitUntil: "domcontentloaded",
+    });
+    console.log(`at ${calendarSyncPageUrl}`);
+    await delay(5000);
+
+    const frames = await page.frames();
+    const targetFrame =
+      frames.find((frame) =>
+        frame.url().includes("PropertyOwner/BookingSettings")
+      ) || page.mainFrame();
+
+    console.log("hasIframe", !!targetFrame);
+
+    const syncClicked = await targetFrame.evaluate(() => {
+      const button = document.querySelector("#btn-synchronize-calendars");
+      if (button) {
+        button.scrollIntoView({ behavior: "smooth", block: "center" });
+        button.click();
+        console.log("Sync button clicked successfully.");
+        return true;
+      }
+      console.error("Sync button not found.");
+      return false;
+    });
+
+    if (!syncClicked) {
+      throw new Error("Sync button could not be clicked.");
+    }
+
+    console.log("Synchronization process should be initiated.");
+  } catch (error) {
+    await handleError(page, error, res, "Error trying to click sync");
+  }
+}
 
 module.exports = {
   loginToLodgify,
+  navigateAndClickSyncButton,
 };
