@@ -30,12 +30,15 @@ async function navigateAndClickSyncButton(page, res) {
     await delay(5000);
 
     const frames = await page.frames();
+    frames.forEach(frame => console.log("Frame URL: ", frame.url()));
     const targetFrame =
       frames.find((frame) =>
         frame.url().includes("PropertyOwner/BookingSettings")
       ) || page.mainFrame();
 
     console.log("hasIframe", !!targetFrame);
+    const syncButton = await targetFrame.waitForSelector('#btn-synchronize-calendars', { visible: true });
+    console.log("🚀 ~ navigateAndClickSyncButton ~ syncButton:", syncButton)
 
     const syncClicked = await targetFrame.evaluate(() => {
       const button = document.querySelector("#btn-synchronize-calendars");

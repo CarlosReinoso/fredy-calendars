@@ -30,6 +30,7 @@ module.exports = async (req, res) => {
       { status: 200 }
     );
   } catch (error) {
+    await delay(5000)
     await handleError(page, error, res, "Error during process");
   }
 };
