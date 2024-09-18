@@ -37,15 +37,15 @@ module.exports = async (req, res) => {
       await delay(5000);
     }
 
-    // const availabilityPage =
-    //   "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/";
+    const availabilityPage =
+      "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/";
 
-    // await page.goto(`${availabilityPage}`, { waitUntil: `networkidle2` });
-    // console.log(`at: ${availabilityPage}`);
+    await page.goto(`${availabilityPage}`, { waitUntil: `networkidle2` });
+    console.log(`at: ${availabilityPage}`);
 
-    // await delay(5000);
+    await delay(5000);
 
-    // await clickAllRefreshButtons(page, res);
+    await clickAllRefreshButtons(page, res);
 
     await browser.close();
 
