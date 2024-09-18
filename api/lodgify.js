@@ -1,7 +1,7 @@
 const { logNodeModules } = require("../util/hasPaths");
 const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
-const { handleError } = require("../util/errorHandler");
 const { loginToLodgify } = require("../services/lodgify");
+const { delay } = require("../util");
 
 module.exports = async (req, res) => {
   logNodeModules();
@@ -13,29 +13,28 @@ module.exports = async (req, res) => {
 
     ({ browser, page } = await setupPuppeteer());
 
-    // Go to the Lodgify login page
     await page.goto("https://app.lodgify.com", {
       waitUntil: "networkidle2",
     });
 
     await loginToLodgify(page, res);
 
-    // Navigate to the calendar sync page
-    await page.goto(
-      "https://app.lodgify.com/#/reservation/settings/export-import",
-      {
-        waitUntil: "networkidle2",
-      }
-    );
+    const calendarSyncPageUrl =
+      "https://app.lodgify.com/#/reservation/settings/export-import";
+    await page.goto(calendarSyncPageUrl, {
+      waitUntil: "networkidle2",
+    });
+    console.log(`at ${calendarSyncPageUrl}`);
+    await delay(5000);
 
-    // Check if the button is inside an iframe
     const frames = await page.frames();
     const targetFrame =
       frames.find((frame) =>
         frame.url().includes("PropertyOwner/BookingSettings")
       ) || page.mainFrame();
 
-    // Evaluate inside the frame to find and click the button
+    console.log("hasIframe", !!targetFrame);
+    
     const syncClicked = await targetFrame.evaluate(() => {
       const button = document.querySelector("#btn-synchronize-calendars");
       if (button) {
