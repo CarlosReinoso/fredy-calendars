@@ -29,13 +29,13 @@ module.exports = async (req, res) => {
     await emailTypeAndClick(page, res);
     await typePasswordAndClickLogin(page, res);
 
-    // const is2AuthModal = await handle2AuthModal(page, res);
-    // if (is2AuthModal) {
-    //   await clickSmsButton(page, res);
-    //   await delay(5000);
-    //   await enterVerificationCode(page, res);
-    //   await delay(5000);
-    // }
+    const is2AuthModal = await handle2AuthModal(page);
+    if (is2AuthModal) {
+      await clickSmsButton(page, res);
+      await delay(5000);
+      await enterVerificationCode(page, res);
+      await delay(5000);
+    }
 
     // const availabilityPage =
     //   "https://www.airbnb.co.uk/multicalendar/1228348447908449096/availability-settings/";

@@ -86,14 +86,13 @@ async function typePasswordAndClickLogin(page, res) {
   }
 }
 async function handle2AuthModal(page) {
-  // Check if the pop-up appeared by looking for a specific element
   const popupAppeared = await page.evaluate(() => {
-    return !!document.querySelector('[data-testid="modal-container"]'); // Modify with actual selector of your pop-up
+    return !!document.querySelector('[data-testid="modal-container"]');
   });
 
   if (popupAppeared) {
     console.log("Pop-up detected. Proceeding to handle it.");
-    // You can add logic here if the pop-up needs specific handling
+
     return true;
   } else {
     console.log("No pop-up detected, continuing...");
