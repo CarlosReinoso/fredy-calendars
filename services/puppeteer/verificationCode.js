@@ -40,6 +40,7 @@ async function enterVerificationCode(page, res) {
   console.log("at enterVerificationCode");
   await axios.post(enterCodeApi, { waiting: true });
   await clickButtonByText(page, "Send again");
+  await delay(5000);
   await handleError(page, "error", res, "TESTY");
 
   const code = await Promise.race([
