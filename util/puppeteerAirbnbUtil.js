@@ -62,7 +62,6 @@ async function emailTypeAndClick(page, res) {
   }
 }
 async function typePasswordAndClickLogin(page, res) {
-  //INPUT PASSWORD AND CLICK LOGIN BUTTON
   try {
     await page.waitForSelector('input[type="password"]', {
       visible: true,
@@ -86,7 +85,7 @@ async function typePasswordAndClickLogin(page, res) {
     await handleError(page, error, res, "Error clicking the Log In button:");
   }
 }
-async function handle2AuthModal(page, res) {
+async function handle2AuthModal(page) {
   // Check if the pop-up appeared by looking for a specific element
   const popupAppeared = await page.evaluate(() => {
     return !!document.querySelector('[data-testid="modal-container"]'); // Modify with actual selector of your pop-up

@@ -24,10 +24,10 @@ module.exports = async (req, res) => {
 
     ({ browser, page } = await setupPuppeteer());
 
-    await airbnbLoginPage(page, res);
-    // await emailLoginMethod(page, res);
-    // await emailTypeAndClick(page, res);
-    // await typePasswordAndClickLogin(page, res);
+    await airbnbLoginPage(page);
+    await emailLoginMethod(page, res);
+    await emailTypeAndClick(page, res);
+    await typePasswordAndClickLogin(page, res);
 
     // const is2AuthModal = await handle2AuthModal(page, res);
     // if (is2AuthModal) {
