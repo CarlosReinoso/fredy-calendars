@@ -2,9 +2,7 @@ const { delay } = require("../../util");
 const { handleError } = require("../../util/errorHandler");
 
 const email = process.env.LODGIFY_LOGIN;
-console.log("🚀 ~ module.exports= ~ email:", email);
 const password = process.env.LODGIFY_PASSWORD;
-console.log("🚀 ~ module.exports= ~ password:", password);
 
 async function loginToLodgify(page, res) {
   try {

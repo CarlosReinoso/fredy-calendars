@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
       ) || page.mainFrame();
 
     console.log("hasIframe", !!targetFrame);
-    
+
     const syncClicked = await targetFrame.evaluate(() => {
       const button = document.querySelector("#btn-synchronize-calendars");
       if (button) {
@@ -58,10 +58,6 @@ module.exports = async (req, res) => {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error during the process:", error);
-    return res.json(
-      { message: "Error during the process", error },
-      { status: 500 }
-    );
+    await handleError(page, error, res, "Error during process");
   }
 };
