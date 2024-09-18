@@ -2,6 +2,7 @@ const { logNodeModules } = require("../util/hasPaths");
 const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
 const { loginToLodgify } = require("../services/lodgify");
 const { delay } = require("../util");
+const { handleError } = require("../util/errorHandler");
 
 module.exports = async (req, res) => {
   logNodeModules();
