@@ -29,8 +29,8 @@ module.exports = async (req, res) => {
     await emailTypeAndClick(page, res);
     await typePasswordAndClickLogin(page, res);
 
-    const is2AuthModal = await handle2AuthModal(page, res);
-    if (is2AuthModal) {
+    // const is2AuthModal = await handle2AuthModal(page, res);
+    if (true) {
       await clickSmsButton(page, res);
       await delay(5000);
       await enterVerificationCode(page, res);

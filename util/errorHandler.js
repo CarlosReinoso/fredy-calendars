@@ -16,7 +16,7 @@ async function handleError(
 
     const screenshot = fs.readFileSync(screenshotPath);
 
-    console.error(`${errorMessage}:`, error);
+    console.error(`Handled error: ${errorMessage}:`, error);
 
     res.setHeader("Content-Type", "image/png");
     res.status(500);
