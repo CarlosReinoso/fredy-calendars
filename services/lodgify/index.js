@@ -41,7 +41,13 @@ async function navigateAndClickSyncButton(page, res) {
       "#btn-synchronize-calendars",
       { visible: true, timeout: 60000 }
     );
-    console.log("🚀 ~ navigateAndClickSyncButton ~ syncButton:");
+    if (syncButton) {
+        // Evaluate the button element inside the page and extract its outer HTML
+        const syncButtonHtml = await syncButton.evaluate(el => el.outerHTML);
+        console.log("🚀 ~ navigateAndClickSyncButton ~ syncButton HTML:", syncButtonHtml);
+      } else {
+        console.log("🚀 ~ navigateAndClickSyncButton ~ syncButton: Button not found");
+      }
 
     const syncClicked = await targetFrame.evaluate(() => {
       const button = document.querySelector("#btn-synchronize-calendars");
