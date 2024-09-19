@@ -80,31 +80,7 @@ async function enterVerificationCode(page, res) {
   }
 }
 
-async function clickButtonByText(page, buttonText) {
-  try {
-    const result = await page.evaluate((text) => {
-      const buttons = Array.from(document.querySelectorAll("button"));
-      const targetButton = buttons.find((button) =>
-        button.textContent.includes(text)
-      );
 
-      if (
-        targetButton &&
-        !targetButton.disabled &&
-        !targetButton.getAttribute("aria-disabled")
-      ) {
-        targetButton.click();
-        return true; // Button clicked
-      }
-      return false; // Button not found or not clickable
-    }, buttonText);
-
-    return result;
-  } catch (error) {
-    console.error(`Error clicking button with text '${buttonText}':`, error);
-    return false;
-  }
-}
 
 module.exports = {
   enterCodeApi,

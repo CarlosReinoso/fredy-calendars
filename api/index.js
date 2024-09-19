@@ -6,12 +6,10 @@ const routes = require("../routes/index");
 
 app.use(cors());
 
-app.use(express.json()); // Middleware to parse JSON bodies
+app.use(express.json());
 
-// Serve static files from the "ui" folder
 app.use(express.static(path.join(__dirname, "../ui")));
 
-// Use the API route
 app.use("/api", routes);
 
 app.get("/test", function (req, res) {

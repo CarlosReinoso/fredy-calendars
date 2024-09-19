@@ -21,6 +21,7 @@ async function handleError(
     res.setHeader("Content-Type", "image/png");
     res.status(500);
     res.send(screenshot);
+    // await sendPageHTML(page, res);
   } catch (screenshotError) {
     console.error(
       "Failed to capture screenshot or send response:",
