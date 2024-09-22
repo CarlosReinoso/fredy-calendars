@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { delay } = require("../../util");
 const { handleError } = require("../../util/errorHandler");
 

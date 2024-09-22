@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const { delay } = require("../../../util");
 const { handleError, sendPageHTML } = require("../../../util/errorHandler");
 const { clickButtonByText } = require("../common");

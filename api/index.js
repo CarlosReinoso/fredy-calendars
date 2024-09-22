@@ -8,11 +8,11 @@ app.use(cors());
 
 app.use(express.json());
 
+app.use("/api", routes);
 app.use(express.static(path.join(__dirname, "../ui")));
 
-app.use("/api", routes);
 
-app.get("/test", function (req, res) {
+app.get("/", function (req, res) {
   res.status(200).json({ hello: true });
 });
 

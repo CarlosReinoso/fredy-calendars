@@ -13,6 +13,7 @@ const setupPuppeteer = require("../services/puppeteer/puppeteerSetup");
 const {
   enterVerificationCode,
 } = require("../services/puppeteer/verificationCode");
+const { respondScreenshot } = require("../util/errorHandler");
 
 module.exports = async (req, res) => {
   logNodeModules();

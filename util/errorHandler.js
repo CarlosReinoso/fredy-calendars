@@ -9,18 +9,7 @@ async function handleError(
   errorMessage = "An error occurred"
 ) {
   try {
-    const screenshotPath = path.join(os.tmpdir(), "screenshot.png");
-
-    await page.screenshot({ path: screenshotPath, fullPage: true });
-    console.log("Screenshot taken for debugging.");
-
-    const screenshot = fs.readFileSync(screenshotPath);
-    const screenshotBase64 = screenshot.toString("base64");
-    console.log(
-      "Screenshot Base64 (truncated):",
-      screenshotBase64.substring(0, 1000)
-    ); // Log first 1000 characters for brevity
-
+    const screenshot = takeSreenshot(page);
     console.error(errorMessage, error);
 
     res.setHeader("Content-Type", "image/png");
@@ -64,4 +53,36 @@ async function timeout(ms, errorMessage) {
   });
 }
 
-module.exports = { handleError, sendPageHTML, timeout };
+async function takeSreenshot(page) {
+  const screenshotPath = path.join(
+    os.tmpdir(),
+    `${new Date().toISOString().replace(/[:.]/g, "-")}-screenshot.png`
+  );
+
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  console.log("Screenshot taken for debugging.");
+
+  const screenshot = fs.readFileSync(screenshotPath);
+  return screenshot;
+}
+async function consoleScreenshot(page, msg) {
+  const screenshot = await takeSreenshot(page);
+  const screenshotBase64 = screenshot.toString("base64");
+  console.log(msg || "", screenshotBase64); // Log first 1000 characters for brevity
+}
+
+async function respondScreenshot(page, res, msg) {
+  console.log("🚀 ~ respondScreenshot:", msg || "");
+  const screenshot = await takeSreenshot(page);
+  res.setHeader("Content-Type", "image/png");
+  res.status(500);
+  res.send(screenshot);
+}
+
+module.exports = {
+  handleError,
+  sendPageHTML,
+  timeout,
+  consoleScreenshot,
+  respondScreenshot,
+};
