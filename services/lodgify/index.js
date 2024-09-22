@@ -30,7 +30,6 @@ async function navigateAndClickSyncButton(page, res) {
     await delay(20000);
 
     const frames = await page.frames();
-    frames.forEach((frame) => console.log("Frame URL: ", frame.url()));
     const targetFrame =
       frames.find((frame) =>
         frame.url().includes("PropertyOwner/BookingSettings")

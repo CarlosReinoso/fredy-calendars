@@ -124,6 +124,7 @@ async function clickSmsButton(page, res) {
 }
 
 async function clickAllRefreshButtons(page, res) {
+  console.log("🚀 ~ clickAllRefreshButtons")
   try {
     const result = await page.evaluate(() => {
       const buttons = Array.from(document.querySelectorAll("button"));
