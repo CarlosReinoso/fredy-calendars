@@ -15,6 +15,11 @@ async function handleError(
     console.log("Screenshot taken for debugging.");
 
     const screenshot = fs.readFileSync(screenshotPath);
+    const screenshotBase64 = screenshot.toString("base64");
+    console.log(
+      "Screenshot Base64 (truncated):",
+      screenshotBase64.substring(0, 1000)
+    ); // Log first 1000 characters for brevity
 
     console.error(errorMessage, error);
 
