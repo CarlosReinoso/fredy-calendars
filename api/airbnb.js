@@ -47,7 +47,6 @@ module.exports = async (req, res) => {
     await delay(5000);
 
     await clickAllRefreshButtons(page, res);
-    await respondScreenshot(page, res, "afetr clickall refresh");
     await browser.close();
 
     res.statusCode = 200;

@@ -4,6 +4,7 @@ const { delay } = require("../util/index");
 
 const email = process.env.AIRBNB_LOGIN;
 const password = process.env.AIRBNB_PASSWORD;
+console.log("🚀 ~ password:", password)
 
 async function airbnbLoginPage(page) {
   await page.goto("https://www.airbnb.com/login", {
@@ -40,6 +41,7 @@ async function emailTypeAndClick(page, res) {
       timeout: 30000,
     });
 
+    console.log("Typed email...");
     await delay(5000);
 
     try {
@@ -57,6 +59,7 @@ async function emailTypeAndClick(page, res) {
     } catch (clickError) {
       console.error("Error clicking the email button:", clickError);
     }
+
     await delay(5000);
   } catch (error) {
     await handleError(page, error, res, "Error during login in EMAIL page");
@@ -64,10 +67,11 @@ async function emailTypeAndClick(page, res) {
 }
 async function typePasswordAndClickLogin(page, res) {
   try {
-    await page.waitForSelector('input[type="password"]', {
-      visible: true,
-      timeout: 30000,
-    });
+    // await page.waitForSelector('input[type="password"]', {
+    //   visible: true,
+    //   timeout: 30000,
+    // });
+    await delay(40000)
     await page.type('input[type="password"]', password, { delay: 100 });
     console.log("Password entered successfully.");
   } catch (error) {
@@ -125,7 +129,7 @@ async function clickSmsButton(page, res) {
 }
 
 async function clickAllRefreshButtons(page, res) {
-  console.log("🚀 ~ clickAllRefreshButtons")
+  console.log("🚀 ~ clickAllRefreshButtons");
   try {
     const result = await page.evaluate(() => {
       const buttons = Array.from(document.querySelectorAll("button"));

@@ -9,7 +9,7 @@ async function handleError(
   errorMessage = "An error occurred"
 ) {
   try {
-    const screenshot = takeSreenshot(page);
+    const screenshot = await takeSreenshot(page);
     console.error(errorMessage, error);
 
     res.setHeader("Content-Type", "image/png");
@@ -54,10 +54,7 @@ async function timeout(ms, errorMessage) {
 }
 
 async function takeSreenshot(page) {
-  const screenshotPath = path.join(
-    os.tmpdir(),
-    `${new Date().toISOString().replace(/[:.]/g, "-")}-screenshot.png`
-  );
+  const screenshotPath = path.join(os.tmpdir(), `screenshot.png`);
 
   await page.screenshot({ path: screenshotPath, fullPage: true });
   console.log("Screenshot taken for debugging.");
@@ -76,7 +73,7 @@ async function respondScreenshot(page, res, msg) {
   const screenshot = await takeSreenshot(page);
   res.setHeader("Content-Type", "image/png");
   res.status(500);
-  res.send(screenshot);
+  return res.send(screenshot);
 }
 
 module.exports = {
